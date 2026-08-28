@@ -5,7 +5,7 @@ spring:
   datasource:
     url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/agentscope_state}
     username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD:postgres}
+    password: ${POSTGRES_PASSWORD:Aspnet88}
     driver-class-name: org.postgresql.Driver
 
 agentscope:

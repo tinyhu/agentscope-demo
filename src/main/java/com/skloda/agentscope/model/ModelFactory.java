@@ -66,7 +66,7 @@ public class ModelFactory {
     /**
      * Auto-prefixes bare model names with "dashscope:" when no provider prefix is present.
      * <p>
-     * This is necessary because {@code deepseek-v4-flash} does not match the
+     * This is necessary because {@code deepseek-v4-flash-0731} does not match the
      * DashScopeModelProvider's {@code qwen.+} pattern — it requires the
      * {@code dashscope:} prefix to resolve correctly.
      */
