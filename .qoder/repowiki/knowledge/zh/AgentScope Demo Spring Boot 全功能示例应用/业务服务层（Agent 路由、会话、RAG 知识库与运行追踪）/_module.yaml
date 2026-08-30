@@ -1,0 +1,33 @@
+schema_version: 1
+module_path: services
+title: 业务服务层（Agent 路由、会话、RAG 知识库与运行追踪）
+scope:
+    - src/main/java/com/skloda/agentscope/service/
+    - src/test/java/com/skloda/agentscope/service/
+source_files: []
+depends_on: []
+related_to:
+    - path: controllers
+      reason: ChatController/KnowledgeController/WorkflowController 通过构造器注入 AgentService、KnowledgeService、WorkflowRunService 调用其方法并返回 SSE/REST 响应。
+    - path: runtime_engine
+      reason: AgentService.createStreamFlux 使用 StreamingAgentRuntimeFactory 按 AgentType 创建运行时实例，并以 Flux.merge 合并 AgentEventMapper 输出的事件流。
+    - path: harness
+      reason: AgentService 对 Harness 类型直接委托给 HarnessAgentService.createStreamFlux，复用其 Session/UserId 缓存化 HarnessAgent 运行能力。
+kk_module_id: 3cccee79-4f6a-4dd3-8214-486afe5616cf
+kk_ordinal: 6
+kk_cards:
+    architecture_design:
+        id: 3856ea85-ccb4-4837-9927-1dd617375aa4
+        title: 业务服务层（Agent 路由、会话、RAG 知识库与运行追踪）
+    coding_conventions:
+        id: b6c4dc05-4cd5-445c-897c-c4bf5fb0b933
+        title: 业务服务层（Agent 路由、会话、RAG 知识库与运行追踪）
+    overview:
+        id: 9775ea03-dea9-45e1-85b0-586ecc839986
+        title: 业务服务层（Agent 路由、会话、RAG 知识库与运行追踪）
+    tech_stack:
+        id: 61e04f14-fdca-489a-82f9-10c6c7535740
+        title: 业务服务层（Agent 路由、会话、RAG 知识库与运行追踪）
+    unique_setup_and_commands:
+        id: d99fec21-9ffc-4923-89ca-c4372e09d821
+        title: 业务服务层（Agent 路由、会话、RAG 知识库与运行追踪）

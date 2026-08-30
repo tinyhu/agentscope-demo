@@ -1,0 +1,29 @@
+schema_version: 1
+module_path: harness
+title: Harness Agent 运行时与工作区管理
+scope:
+    - src/main/java/com/skloda/agentscope/harness/
+    - src/test/java/com/skloda/agentscope/harness/
+source_files: []
+depends_on: []
+related_to:
+    - path: resources_and_static
+      reason: WorkspaceInitializer 从 classpath harness-templates/ 复制模板目录至工作区；ToolRegistry 也扫描 skills/*/SKILL.md，两者都消费该资源目录。
+kk_module_id: 62722f03-3344-4cbe-849d-7a4b07c9d6bf
+kk_ordinal: 2
+kk_cards:
+    architecture_design:
+        id: 06101bf9-fbb0-487e-8b83-7f1cbba6ea90
+        title: Harness Agent 运行时与工作区管理
+    coding_conventions:
+        id: a3b62198-4253-4399-9955-d74681caf1bd
+        title: Harness Agent 运行时与工作区管理
+    overview:
+        id: 2f483571-110b-4865-ae99-6f5c4af74888
+        title: Harness Agent 运行时与工作区管理
+    tech_stack:
+        id: 90f8b98a-a1f4-4fff-ac90-2792785e8eef
+        title: Harness Agent 运行时与工作区管理
+    unique_setup_and_commands:
+        id: add1947f-9be6-47ad-94d0-564b5bdd4109
+        title: Harness Agent 运行时与工作区管理

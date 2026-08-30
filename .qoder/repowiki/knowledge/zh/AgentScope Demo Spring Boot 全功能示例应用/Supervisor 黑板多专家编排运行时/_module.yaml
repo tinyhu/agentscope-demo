@@ -1,0 +1,27 @@
+schema_version: 1
+module_path: blackboard_supervisor
+title: Supervisor 黑板多专家编排运行时
+scope:
+    - src/main/java/com/skloda/agentscope/blackboard/
+    - src/test/java/com/skloda/agentscope/blackboard/
+source_files: []
+depends_on: []
+related_to: []
+kk_module_id: ccbcd3c7-d9e1-450c-9732-5342372c88ae
+kk_ordinal: 4
+kk_cards:
+    architecture_design:
+        id: d1e47f2e-9878-4ba1-99d7-c344bfe1940f
+        title: Supervisor 黑板多专家编排运行时
+    coding_conventions:
+        id: 05cd7893-9b34-4dae-97f7-09cc6780a149
+        title: Supervisor 黑板多专家编排运行时
+    overview:
+        id: c7465e0d-bc61-4cf8-a0e4-b257360154e6
+        title: Supervisor 黑板多专家编排运行时
+    tech_stack:
+        id: 5de2bdfc-5527-4e34-82ab-ae12ded6d1fd
+        title: Supervisor 黑板多专家编排运行时
+    unique_setup_and_commands:
+        id: 54305724-b2fd-46f0-b8f1-fc8e07f1559c
+        title: Supervisor 黑板多专家编排运行时

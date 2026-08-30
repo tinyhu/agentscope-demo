@@ -1,0 +1,53 @@
+schema_version: 1
+module_path: root
+title: AgentScope Demo Spring Boot 全功能示例应用
+scope:
+    - README.md
+    - AGENTS.md
+    - CLAUDE.md
+    - .gitignore
+    - .java-version
+    - pom.xml
+    - ROADMAP.md
+source_files: []
+depends_on: []
+related_to: []
+kk_module_id: d88f4303-ea7c-4076-bd8c-9e59b7082627
+kk_cards:
+    architecture_design:
+        id: e288a17c-ee81-4394-b7c6-762b3bc17075
+        title: AgentScope Demo Spring Boot 全功能示例应用
+    coding_conventions:
+        id: 2be37e56-863f-4826-9e54-c5343628d328
+        title: AgentScope Demo Spring Boot 全功能示例应用
+    overview:
+        id: d77aa140-27c1-4d01-8184-7f75253d6eab
+        title: AgentScope Demo Spring Boot 全功能示例应用
+    unique_setup_and_commands:
+        id: 5a6d02b7-0b1d-41e1-b7a4-701b129a7ea8
+        title: AgentScope Demo Spring Boot 全功能示例应用
+    build_system:
+        id: f3eeddea-17f9-40b0-a551-2101d2900783
+        title: Maven + Spring Boot 构建与打包体系
+    configuration_system:
+        id: 14dccfd1-5d7e-406e-92b3-cde245ff8003
+        title: Spring Boot Profile + YAML 分层配置与 AgentScope 自定义配置体系
+    dependency_management:
+        id: 5e9a93d3-767c-490b-aec7-663ea2dee10c
+        title: 基于 Maven + Spring Boot Parent 的统一依赖管理（Java）与独立 Python CLI 包
+    error_handling:
+        id: d39f6ce7-52b9-4d6c-ad08-dfed9cbbc4e0
+        title: SSE 事件流式错误与无自定义异常的分层错误处理体系
+    frontend_style:
+        id: 57883d5f-7709-412b-94cb-d5b217e472d7
+        title: Cyberpunk Terminal 主题：原生 CSS + CSS 自定义属性的模块化样式系统
+    logging_system:
+        id: 597d3772-004d-4128-bdd8-db7335dcbbd9
+        title: SLF4J + Logback 统一日志与 AgentScope 中间件审计追踪
+kk_repo_cards:
+    - build_system
+    - configuration_system
+    - dependency_management
+    - error_handling
+    - frontend_style
+    - logging_system

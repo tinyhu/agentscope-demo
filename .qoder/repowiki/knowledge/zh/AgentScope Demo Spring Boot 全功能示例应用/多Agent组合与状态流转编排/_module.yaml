@@ -1,0 +1,26 @@
+schema_version: 1
+module_path: multi_agent
+title: 多Agent组合与状态流转编排
+scope:
+    - src/main/java/com/skloda/agentscope/composite/
+    - src/test/java/com/skloda/agentscope/composite/
+source_files: []
+depends_on: []
+related_to:
+    - path: services
+      reason: AgentService 根据 AgentType 创建 CompositeAgentFactory 的 routing/handoffs/state-graph 多智能体运行时，并桥接其事件到 SSE。
+kk_module_id: 2adac6c4-a0cd-48d5-9156-6def3c1addd3
+kk_ordinal: 3
+kk_cards:
+    architecture_design:
+        id: de32204d-be44-4541-b471-43d9201f3459
+        title: 多Agent组合与状态流转编排
+    coding_conventions:
+        id: 73a70cd5-92db-48db-b84c-93bbd0c1db51
+        title: 多Agent组合与状态流转编排
+    overview:
+        id: 3777d44d-5adc-4b8e-a416-c0d1df191eda
+        title: 多Agent组合与状态流转编排
+    tech_stack:
+        id: 82b97e9b-c2df-4954-8974-c977dac6f554
+        title: 多Agent组合与状态流转编排

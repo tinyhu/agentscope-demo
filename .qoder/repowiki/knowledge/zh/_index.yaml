@@ -1,0 +1,198 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: zh-CN
+commit: 93cba443dd3194fe24c80f7dbc3fa1d174d9b51a
+branch: main
+exported_at: "2026-08-30T09:53:14Z"
+modules:
+    agent_core:
+        dir_name: Agent 配置与实例化工厂
+        title: Agent 配置与实例化工厂
+        scope:
+            - src/main/java/com/skloda/agentscope/agent/
+            - src/test/java/com/skloda/agentscope/agent/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    agent_harness_cli:
+        dir_name: AgentScope Demo CLI Harness
+        title: AgentScope Demo CLI Harness
+        scope:
+            - agent-harness/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    blackboard_supervisor:
+        dir_name: Supervisor 黑板多专家编排运行时
+        title: Supervisor 黑板多专家编排运行时
+        scope:
+            - src/main/java/com/skloda/agentscope/blackboard/
+            - src/test/java/com/skloda/agentscope/blackboard/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    config_and_models:
+        dir_name: AgentScope 配置与核心数据模型
+        title: AgentScope 配置与核心数据模型
+        scope:
+            - src/main/java/com/skloda/agentscope/config/
+            - src/main/java/com/skloda/agentscope/model/
+            - src/test/java/com/skloda/agentscope/model/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: agent_core
+              reason: AgentConfigService 从 classpath agents.yml/harness-agents.yml 反序列化为 AgentConfig/HarnessConfig 等 DTO（定义在 model 包），并由 AgentFactory 消费。
+    controllers:
+        dir_name: HTTP_Webhook 控制器层 (Chat、知识、工作流、飞书与指标)
+        title: HTTP/Webhook 控制器层 (Chat、知识、工作流、飞书与指标)
+        scope:
+            - src/main/java/com/skloda/agentscope/controller/
+            - src/test/java/com/skloda/agentscope/controller/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    docs:
+        dir_name: 项目文档与 Superpowers Plan_Spec 仓库
+        title: 项目文档与 Superpowers Plan/Spec 仓库
+        scope:
+            - docs/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    harness:
+        dir_name: Harness Agent 运行时与工作区管理
+        title: Harness Agent 运行时与工作区管理
+        scope:
+            - src/main/java/com/skloda/agentscope/harness/
+            - src/test/java/com/skloda/agentscope/harness/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: resources_and_static
+              reason: WorkspaceInitializer 从 classpath harness-templates/ 复制模板目录至工作区；ToolRegistry 也扫描 skills/*/SKILL.md，两者都消费该资源目录。
+    mcp_integration:
+        dir_name: MCP 服务器客户端与本地 Demo 管理
+        title: MCP 服务器客户端与本地 Demo 管理
+        scope:
+            - src/main/java/com/skloda/agentscope/mcp/
+            - src/test/java/com/skloda/agentscope/mcp/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    middleware:
+        dir_name: AgentScope 中间件体系（审计、限流、审批、指标、上下文增强）
+        title: AgentScope 中间件体系（审计、限流、审批、指标、上下文增强）
+        scope:
+            - src/main/java/com/skloda/agentscope/middleware/
+            - src/test/java/com/skloda/agentscope/middleware/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    multi_agent:
+        dir_name: 多Agent组合与状态流转编排
+        title: 多Agent组合与状态流转编排
+        scope:
+            - src/main/java/com/skloda/agentscope/composite/
+            - src/test/java/com/skloda/agentscope/composite/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: services
+              reason: AgentService 根据 AgentType 创建 CompositeAgentFactory 的 routing/handoffs/state-graph 多智能体运行时，并桥接其事件到 SSE。
+    resources_and_static:
+        dir_name: 应用配置与静态资源（配置文件、Agent_Harness 模板、技能包与前端静态文件）
+        title: 应用配置与静态资源（配置文件、Agent/Harness 模板、技能包与前端静态文件）
+        scope:
+            - src/main/resources/
+            - target/classes/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    root:
+        dir_name: AgentScope Demo Spring Boot 全功能示例应用
+        title: AgentScope Demo Spring Boot 全功能示例应用
+        scope:
+            - README.md
+            - AGENTS.md
+            - CLAUDE.md
+            - .gitignore
+            - .java-version
+            - pom.xml
+            - ROADMAP.md
+        source_files: []
+        children:
+            - agent_core
+            - agent_harness_cli
+            - blackboard_supervisor
+            - config_and_models
+            - controllers
+            - docs
+            - harness
+            - mcp_integration
+            - middleware
+            - multi_agent
+            - resources_and_static
+            - runtime_engine
+            - schema
+            - services
+            - tools
+        depends_on: []
+        related_to: []
+    runtime_engine:
+        dir_name: AgentScope 运行时编排与流式事件桥接
+        title: AgentScope 运行时编排与流式事件桥接
+        scope:
+            - src/main/java/com/skloda/agentscope/runtime/
+            - src/test/java/com/skloda/agentscope/runtime/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    schema:
+        dir_name: 结构化输出数据模型（Schema）
+        title: 结构化输出数据模型（Schema）
+        scope:
+            - src/main/java/com/skloda/agentscope/schema/
+            - src/test/java/com/skloda/agentscope/schema/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    services:
+        dir_name: 业务服务层（Agent 路由、会话、RAG 知识库与运行追踪）
+        title: 业务服务层（Agent 路由、会话、RAG 知识库与运行追踪）
+        scope:
+            - src/main/java/com/skloda/agentscope/service/
+            - src/test/java/com/skloda/agentscope/service/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: controllers
+              reason: ChatController/KnowledgeController/WorkflowController 通过构造器注入 AgentService、KnowledgeService、WorkflowRunService 调用其方法并返回 SSE/REST 响应。
+            - path: runtime_engine
+              reason: AgentService.createStreamFlux 使用 StreamingAgentRuntimeFactory 按 AgentType 创建运行时实例，并以 Flux.merge 合并 AgentEventMapper 输出的事件流。
+            - path: harness
+              reason: AgentService 对 Harness 类型直接委托给 HarnessAgentService.createStreamFlux，复用其 Session/UserId 缓存化 HarnessAgent 运行能力。
+    tools:
+        dir_name: AgentScope 工具集与工具注册中心
+        title: AgentScope 工具集与工具注册中心
+        scope:
+            - src/main/java/com/skloda/agentscope/tool/
+            - src/test/java/com/skloda/agentscope/tool/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []

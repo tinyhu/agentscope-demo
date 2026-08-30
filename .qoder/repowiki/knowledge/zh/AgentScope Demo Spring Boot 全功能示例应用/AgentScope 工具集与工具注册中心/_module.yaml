@@ -1,0 +1,27 @@
+schema_version: 1
+module_path: tools
+title: AgentScope 工具集与工具注册中心
+scope:
+    - src/main/java/com/skloda/agentscope/tool/
+    - src/test/java/com/skloda/agentscope/tool/
+source_files: []
+depends_on: []
+related_to: []
+kk_module_id: 04dccf48-3dfd-4f57-9c5e-3e13b928bcd6
+kk_ordinal: 7
+kk_cards:
+    architecture_design:
+        id: 23d69efe-b02a-40fd-8bd3-e973ee71f715
+        title: AgentScope 工具集与工具注册中心
+    coding_conventions:
+        id: ed852269-2a0e-4b49-9aeb-ed7cd4b7c2ee
+        title: AgentScope 工具集与工具注册中心
+    overview:
+        id: a856f177-d64d-449a-98bc-a0bf6c2d1a6e
+        title: AgentScope 工具集与工具注册中心
+    tech_stack:
+        id: a382a2ed-11c3-412f-ba5f-a824a17fa247
+        title: AgentScope 工具集与工具注册中心
+    unique_setup_and_commands:
+        id: ebf45903-3954-4383-8a6d-2a902a8178e8
+        title: AgentScope 工具集与工具注册中心

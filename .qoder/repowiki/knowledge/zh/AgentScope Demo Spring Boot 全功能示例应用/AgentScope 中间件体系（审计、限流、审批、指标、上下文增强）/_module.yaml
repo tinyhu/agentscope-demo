@@ -1,0 +1,27 @@
+schema_version: 1
+module_path: middleware
+title: AgentScope 中间件体系（审计、限流、审批、指标、上下文增强）
+scope:
+    - src/main/java/com/skloda/agentscope/middleware/
+    - src/test/java/com/skloda/agentscope/middleware/
+source_files: []
+depends_on: []
+related_to: []
+kk_module_id: 58711ee8-31d9-4efb-a6b3-e8e1970f1deb
+kk_ordinal: 8
+kk_cards:
+    architecture_design:
+        id: 22accd86-a2ee-47af-821e-b3792fc07954
+        title: AgentScope 中间件体系（审计、限流、审批、指标、上下文增强）
+    coding_conventions:
+        id: fa29db26-a260-4df4-bfc0-72226be9eb65
+        title: AgentScope 中间件体系（审计、限流、审批、指标、上下文增强）
+    overview:
+        id: d5a95496-39e4-4e0c-9a93-974aef7c696f
+        title: AgentScope 中间件体系（审计、限流、审批、指标、上下文增强）
+    tech_stack:
+        id: c36c85a4-a191-4ba0-9eb9-89847deb4f61
+        title: AgentScope 中间件体系（审计、限流、审批、指标、上下文增强）
+    unique_setup_and_commands:
+        id: 6a8443dd-d87d-4263-b903-2f8c310ceffc
+        title: AgentScope 中间件体系（审计、限流、审批、指标、上下文增强）

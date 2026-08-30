@@ -1,0 +1,27 @@
+schema_version: 1
+module_path: resources_and_static
+title: 应用配置与静态资源（配置文件、Agent/Harness 模板、技能包与前端静态文件）
+scope:
+    - src/main/resources/
+    - target/classes/
+source_files: []
+depends_on: []
+related_to: []
+kk_module_id: cee6904b-87b4-4b81-a741-2613276c6c1d
+kk_ordinal: 11
+kk_cards:
+    architecture_design:
+        id: 6d40a11d-4b1e-4f8b-a77c-61334b9d09fd
+        title: 应用配置与静态资源（配置文件、Agent/Harness 模板、技能包与前端静态文件）
+    coding_conventions:
+        id: 3a38d4db-eebe-4bf8-9311-6b261d1f25f3
+        title: 应用配置与静态资源（配置文件、Agent/Harness 模板、技能包与前端静态文件）
+    overview:
+        id: 490c8266-e344-46f8-bf8c-fde47fd30d28
+        title: 应用配置与静态资源（配置文件、Agent/Harness 模板、技能包与前端静态文件）
+    tech_stack:
+        id: 9402af9c-750a-4704-9752-861be1bfc306
+        title: 应用配置与静态资源（配置文件、Agent/Harness 模板、技能包与前端静态文件）
+    unique_setup_and_commands:
+        id: 093468e4-9180-454a-a7b3-0cf86ae35efc
+        title: 应用配置与静态资源（配置文件、Agent/Harness 模板、技能包与前端静态文件）
