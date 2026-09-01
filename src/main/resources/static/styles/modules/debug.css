@@ -522,7 +522,7 @@
 
 /* ===== RAG RETRIEVAL ===== */
 .rtl-row.type-rag {
-    background: rgba(0, 240, 255, 0.05);
+    background: rgba(8, 145, 178, 0.09);
     border-radius: 4px;
     margin: 2px 0;
     padding: var(--space-xs) 0;
@@ -546,7 +546,7 @@
 
 /* MCP tool calls — distinct from local @Tool calls (purple vs cyan) */
 .rtl-row.type-mcp {
-    background: rgba(168, 85, 247, 0.05);
+    background: rgba(124, 58, 237, 0.09);
     border-radius: 4px;
     margin: 2px 0;
     padding: var(--space-xs) 0;
@@ -572,7 +572,7 @@
 
 /* Supervisor entry row — neon-cyan accent */
 .rtl-row.type-supervisor {
-    background: rgba(0, 240, 255, 0.04);
+    background: rgba(8, 145, 178, 0.07);
     border-radius: 4px;
     margin: 2px 0;
     padding: var(--space-xs) 0;
@@ -589,7 +589,7 @@
 
 /* Routing decision — neon-purple (same hue as legacy routing_decision card) */
 .rtl-row.type-routing {
-    background: rgba(200, 0, 255, 0.05);
+    background: rgba(192, 38, 211, 0.08);
     border-radius: 4px;
     margin: 2px 0;
     padding: var(--space-xs) 0;
@@ -610,7 +610,7 @@
 
 /* Expert dispatch — neon-yellow (same hue as handoff card) */
 .rtl-row.type-expert {
-    background: rgba(255, 200, 0, 0.05);
+    background: rgba(161, 98, 7, 0.09);
     border-radius: 4px;
     margin: 2px 0;
     padding: var(--space-xs) 0;
@@ -631,7 +631,7 @@
 
 /* Blackboard diff — neon-green */
 .rtl-row.type-blackboard {
-    background: rgba(0, 255, 136, 0.05);
+    background: rgba(5, 150, 105, 0.09);
     border-radius: 4px;
     margin: 2px 0;
     padding: var(--space-xs) 0;
@@ -724,7 +724,7 @@
 }
 
 .rtl-row.collapsible:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(15, 23, 42, 0.05);
 }
 
 .rtl-reason.collapsed,

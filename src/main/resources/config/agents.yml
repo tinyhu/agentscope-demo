@@ -1,4 +1,34 @@
 agents:
+  - agentId: tiny-agent
+    category: single
+    name: Tiny Chat
+    description: 冷月Agent，AI助手交流
+    systemPrompt: |
+      你是一个股票分析AI助手。
+      请保持简洁、清晰地回答股票行情及基本面的相关问题。
+    modelName: deepseek-v4-flash-0731
+    streaming: true
+    enableThinking: true
+    skills:
+      - docx
+      - pdf
+      - xlsx
+    userTools:
+      - parse_docx
+      - parse_pdf
+      - parse_xlsx
+    systemTools: [ ]
+    autoContext: true
+    autoContextMsgThreshold: 30
+    autoContextLastKeep: 10
+    autoContextTokenRatio: 0.3
+    ragEnabled: true
+    ragRetrieveLimit: 3
+    ragScoreThreshold: 0.5
+    samplePrompts:
+      - prompt: "请分析一下中际旭创近期的股票行情"
+        expectedBehavior: "展示做该股票的行情、基本面分析"
+
   - agentId: chat-basic
     category: single
     name: Basic Chat

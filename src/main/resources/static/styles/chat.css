@@ -1,15 +1,15 @@
 /* ===== FRONTEND MODULE REFACTORING - CSS ENTRY POINT ===== */
 /* Import base styles */
-@import url('base.css?v=2.4');
+@import url('base.css?v=3.0');
 
 /* Import component-specific CSS modules */
-@import url('modules/header.css?v=2.4');
-@import url('modules/sidebar.css?v=2.4');
-@import url('modules/chat.css?v=2.4');
-@import url('modules/debug.css?v=2.7');
-@import url('modules/upload.css?v=2.4');
-@import url('modules/modal.css?v=2.4');
-@import url('modules/utils.css?v=2.4');
+@import url('modules/header.css?v=3.0');
+@import url('modules/sidebar.css?v=3.1');
+@import url('modules/chat.css?v=3.0');
+@import url('modules/debug.css?v=3.0');
+@import url('modules/upload.css?v=3.0');
+@import url('modules/modal.css?v=3.0');
+@import url('modules/utils.css?v=3.0');
 
 /* ===== APP LAYOUT ===== */
 .app {
@@ -28,8 +28,9 @@
     padding: var(--space-md) var(--space-lg);
     background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-void-alt) 100%);
     border-bottom: 1px solid var(--border-accent);
-    box-shadow: 0 2px 30px rgba(0, 240, 255, 0.15), 0 0 60px rgba(0, 240, 255, 0.05);
-    min-height: 60px;
+    box-shadow: 0 2px 5px rgba(0, 240, 255, 0.15), 0 0 5px rgba(0, 240, 255, 0.05);
+    min-height: 1px;
+    max-height: 1px;
     position: relative;
 }
 
@@ -47,15 +48,9 @@
 .header-logo {
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+    background: linear-gradient(135deg, rgba(8, 145, 178, 0.16), rgba(192, 38, 211, 0.16));
+    border: 1px solid rgba(8, 145, 178, 0.3);
     border-radius: 6px;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.5), 0 0 30px rgba(0, 240, 255, 0.2);
-    animation: logoGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes logoGlow {
-    0% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.5), 0 0 30px rgba(0, 240, 255, 0.2); }
-    100% { box-shadow: 0 0 20px rgba(255, 0, 204, 0.5), 0 0 40px rgba(255, 0, 204, 0.2); }
 }
 
 .header-title {
@@ -208,9 +203,8 @@
 
 #messageInput:focus {
     border-color: var(--neon-cyan);
-    box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.2),
-                0 0 15px rgba(0, 240, 255, 0.15),
-                0 0 30px rgba(0, 240, 255, 0.05);
+    box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.2),
+                0 2px 10px rgba(8, 145, 178, 0.12);
 }
 
 #messageInput::placeholder {
@@ -333,9 +327,9 @@
     font-size: 10px;
     padding: 1px 5px;
     border-radius: 3px;
-    background: rgba(255, 165, 0, 0.15);
-    color: #ff9500;
-    border: 1px solid rgba(255, 165, 0, 0.3);
+    background: rgba(217, 119, 6, 0.12);
+    color: #b45309;
+    border: 1px solid rgba(217, 119, 6, 0.4);
     vertical-align: middle;
     margin-left: 4px;
 }
@@ -344,9 +338,9 @@
     font-size: 10px;
     padding: 1px 5px;
     border-radius: 3px;
-    background: rgba(0, 255, 136, 0.12);
-    color: #00ff88;
-    border: 1px solid rgba(0, 255, 136, 0.3);
+    background: rgba(5, 150, 105, 0.12);
+    color: #047857;
+    border: 1px solid rgba(5, 150, 105, 0.4);
     vertical-align: middle;
     margin-left: 4px;
 }
@@ -395,19 +389,19 @@
 }
 
 .mode-btn.active[data-mode="CLAW"] {
-    background: rgba(0, 255, 136, 0.12);
-    color: #00ff88;
-    text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
+    background: rgba(5, 150, 105, 0.14);
+    color: #047857;
+    font-weight: 600;
 }
 
 .mode-btn.active[data-mode="BUILDER"] {
-    background: rgba(255, 165, 0, 0.12);
-    color: #ff9500;
-    text-shadow: 0 0 6px rgba(255, 149, 0, 0.3);
+    background: rgba(217, 119, 6, 0.14);
+    color: #b45309;
+    font-weight: 600;
 }
 
 .mode-btn:hover:not(.active) {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(15, 23, 42, 0.05);
     color: var(--text-secondary);
 }
 

@@ -150,10 +150,10 @@
 }
 
 .config-tag.skill {
-    border: 1px solid #ff9500;
-    color: #ff9500;
-    text-shadow: 0 0 5px rgba(255, 149, 0, 0.3);
-    box-shadow: 0 0 5px rgba(255, 149, 0, 0.2);
+    border: 1px solid #d97706;
+    color: #b45309;
+    text-shadow: 0 0 5px rgba(217, 119, 6, 0.3);
+    box-shadow: 0 0 5px rgba(217, 119, 6, 0.2);
 }
 
 .config-tag:hover {

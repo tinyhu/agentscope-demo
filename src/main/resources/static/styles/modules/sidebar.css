@@ -176,14 +176,14 @@
     width: 32px;
     height: 32px;
     border-radius: 6px;
-    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--neon-blue);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
     font-size: 12px;
     flex-shrink: 0;
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 25px rgba(0, 240, 255, 0.15);
 }
 
 .agent-card-info {
@@ -296,8 +296,8 @@
 }
 
 .agent-group-header.color-orange::after {
-    background: #ff9500;
-    box-shadow: 0 0 8px rgba(255, 149, 0, 0.6);
+    background: #d97706;
+    box-shadow: 0 0 8px rgba(217, 119, 6, 0.5);
 }
 
 .agent-group-header.color-purple::after {
@@ -395,8 +395,8 @@
 }
 
 .agent-group-icon.color-orange {
-    color: #ff9500;
-    filter: drop-shadow(0 0 4px rgba(255, 149, 0, 0.6));
+    color: #d97706;
+    filter: drop-shadow(0 0 4px rgba(217, 119, 6, 0.4));
 }
 
 .agent-group-icon.color-purple {
@@ -421,33 +421,27 @@
 }
 
 .agent-group-header.color-cyan .agent-group-label {
-    color: rgba(0, 240, 255, 0.85);
-    text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+    color: #0891b2;
 }
 
 .agent-group-header.color-green .agent-group-label {
-    color: rgba(0, 255, 136, 0.85);
-    text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+    color: #059669;
 }
 
 .agent-group-header.color-magenta .agent-group-label {
-    color: rgba(255, 0, 204, 0.85);
-    text-shadow: 0 0 8px rgba(255, 0, 204, 0.3);
+    color: #c026d3;
 }
 
 .agent-group-header.color-orange .agent-group-label {
-    color: rgba(255, 149, 0, 0.85);
-    text-shadow: 0 0 8px rgba(255, 149, 0, 0.3);
+    color: #b45309;
 }
 
 .agent-group-header.color-purple .agent-group-label {
-    color: rgba(168, 85, 247, 0.85);
-    text-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+    color: #7c3aed;
 }
 
 .agent-group-header.color-pink .agent-group-label {
-    color: rgba(255, 0, 136, 0.85);
-    text-shadow: 0 0 8px rgba(255, 0, 136, 0.3);
+    color: #db2777;
 }
 
 .agent-group-count {

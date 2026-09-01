@@ -459,7 +459,7 @@ async function sendMessage() {
                                     var sourceBadge = document.createElement('div');
                                     sourceBadge.className = 'subagent-source-badge';
                                     sourceBadge.textContent = '🤖 ' + payload.source;
-                                    sourceBadge.style.cssText = 'font-size:0.75em;color:#888;margin-bottom:4px;font-style:italic;';
+                                    sourceBadge.style.cssText = 'font-size:0.75em;color:var(--text-muted);margin-bottom:4px;font-style:italic;';
                                     agentBubble.parentElement.insertBefore(sourceBadge, agentBubble);
                                 }
                             }

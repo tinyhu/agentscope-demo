@@ -30,6 +30,14 @@ class PdfParserToolTest {
     }
 
     @Test
+    void parsePdf() throws Exception {
+        String pdfText=tool.parsePdf("/Users/huhm/Downloads/公司注册合同-恒诚信企业服务代理合同-20260831.pdf");
+
+        assertEquals(pdfText.length(), pdfText.length());
+    }
+
+
+    @Test
     void parsePdfReturnsErrorForMissingFile() {
         String result = tool.parsePdf(tempDir.resolve("missing.pdf").toString());
 

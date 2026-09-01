@@ -19,10 +19,12 @@ public class InMemoryChatHistoryRepository implements ChatHistoryRepository {
         if (agentId == null || agentId.isBlank()) {
             return new ArrayList<>();
         }
-        return new ArrayList<>(messagesByAgent.getOrDefault(agentId, new CopyOnWriteArrayList<>())
+        var data = new ArrayList<>(messagesByAgent.getOrDefault(agentId, new CopyOnWriteArrayList<>())
                 .stream()
                 .map(ChatMessage::new)
                 .toList());
+
+        return data;
     }
 
     @Override

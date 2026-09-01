@@ -1,4 +1,4 @@
-/* ===== CYBERPUNK TERMINAL UI - BASE STYLES ===== */
+/* ===== CLEAN LIGHT TERMINAL UI - BASE STYLES ===== */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -6,49 +6,49 @@
 }
 
 :root {
-    /* Base Colors - Cyberpunk Dark Theme (Lightened) */
-    --bg-void: #12121f;
-    --bg-void-alt: #161626;
-    --bg-card: #1c1c30;
-    --bg-card-hover: #22223d;
-    --bg-card-active: #282845;
-    --bg-input: #14141f;
-    --bg-debug: #151524;
+    /* Base Colors - Clean Light Theme */
+    --bg-void: #f4f6fa;
+    --bg-void-alt: #edf1f7;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f4f8fc;
+    --bg-card-active: #e9f2f9;
+    --bg-input: #f7f9fc;
+    --bg-debug: #f8fafd;
 
-    /* Neon Accents - Saturated with depth */
-    --neon-cyan: #00f0ff;
-    --neon-green: #00ff88;
-    --neon-magenta: #ff00cc;
-    --neon-blue: #00b8ff;
-    --neon-purple: #c800ff;
-    --neon-pink: #ff0088;
-    --neon-yellow: #ffee00;
-    --neon-orange: #ff6600;
+    /* Accents - saturated, readable on light backgrounds */
+    --neon-cyan: #0891b2;
+    --neon-green: #059669;
+    --neon-magenta: #c026d3;
+    --neon-blue: #2563eb;
+    --neon-purple: #7c3aed;
+    --neon-pink: #db2777;
+    --neon-yellow: #a16207;
+    --neon-orange: #ea580c;
 
-    /* Neon Glow Colors (for box-shadow / text-shadow) */
-    --glow-cyan: 0 0 7px rgba(0, 240, 255, 0.6), 0 0 20px rgba(0, 240, 255, 0.3);
-    --glow-cyan-strong: 0 0 7px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.5), 0 0 40px rgba(0, 240, 255, 0.2);
-    --glow-magenta: 0 0 7px rgba(255, 0, 204, 0.6), 0 0 20px rgba(255, 0, 204, 0.3);
-    --glow-magenta-strong: 0 0 7px rgba(255, 0, 204, 0.8), 0 0 20px rgba(255, 0, 204, 0.5), 0 0 40px rgba(255, 0, 204, 0.2);
-    --glow-green: 0 0 7px rgba(0, 255, 136, 0.6), 0 0 20px rgba(0, 255, 136, 0.3);
-    --glow-purple: 0 0 7px rgba(200, 0, 255, 0.6), 0 0 20px rgba(200, 0, 255, 0.3);
+    /* Soft Shadows (replacing neon glows) */
+    --glow-cyan: 0 2px 8px rgba(8, 145, 178, 0.22);
+    --glow-cyan-strong: 0 4px 14px rgba(8, 145, 178, 0.32);
+    --glow-magenta: 0 2px 8px rgba(192, 38, 211, 0.22);
+    --glow-magenta-strong: 0 4px 14px rgba(192, 38, 211, 0.32);
+    --glow-green: 0 2px 8px rgba(5, 150, 105, 0.22);
+    --glow-purple: 0 2px 8px rgba(124, 58, 237, 0.22);
 
-    /* Text Colors - Cyberpunk high-contrast */
-    --text-primary: #e8e8f0;
-    --text-secondary: #b8b8d0;
-    --text-muted: #6868a0;
-    --text-glow: rgba(0, 240, 255, 0.9);
+    /* Text Colors - dark neutrals for light background */
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --text-glow: #0891b2;
 
     /* Status Colors */
     --status-thinking: var(--neon-blue);
     --status-tool: var(--neon-green);
-    --status-error: #ff2a4a;
+    --status-error: #dc2626;
     --status-user: var(--neon-cyan);
 
     /* Borders */
-    --border-dim: #1e1e35;
-    --border-accent: rgba(0, 240, 255, 0.35);
-    --border-glow: rgba(0, 240, 255, 0.6);
+    --border-dim: #dce3ee;
+    --border-accent: rgba(8, 145, 178, 0.4);
+    --border-glow: rgba(8, 145, 178, 0.55);
 
     /* Spacing */
     --space-xs: 4px;
@@ -89,9 +89,9 @@ html, body {
     pointer-events: none;
     z-index: 0;
     background:
-        radial-gradient(ellipse at 50% 0%, rgba(0, 240, 255, 0.06) 0%, transparent 50%),
-        radial-gradient(ellipse at 0% 50%, rgba(255, 0, 204, 0.03) 0%, transparent 40%),
-        radial-gradient(ellipse at 100% 50%, rgba(0, 184, 255, 0.03) 0%, transparent 40%);
+        radial-gradient(ellipse at 50% 0%, rgba(8, 145, 178, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 0% 50%, rgba(192, 38, 211, 0.04) 0%, transparent 40%),
+        radial-gradient(ellipse at 100% 50%, rgba(37, 99, 235, 0.04) 0%, transparent 40%);
 }
 
 /* ===== NEON FLICKER (subtle) ===== */
@@ -116,12 +116,12 @@ html, body {
 .md-render strong { color: var(--neon-green); font-weight: 600; }
 .md-render em { color: var(--neon-yellow); font-style: italic; }
 .md-render hr { border: none; border-top: 1px solid var(--border-dim); margin: 1em 0; }
-.md-render code { background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.15); padding: 2px 6px; border-radius: 3px; font-size: 0.9em; color: var(--neon-cyan); text-shadow: 0 0 5px rgba(0, 240, 255, 0.3); }
+.md-render code { background: rgba(8, 145, 178, 0.08); border: 1px solid rgba(8, 145, 178, 0.2); padding: 2px 6px; border-radius: 3px; font-size: 0.9em; color: var(--neon-cyan); }
 .md-render pre { background: var(--bg-input); border: 1px solid var(--border-accent); padding: 12px; border-radius: 6px; overflow-x: auto; margin: 12px 0; box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.03); }
 .md-render pre code { background: transparent; border: none; color: var(--text-primary); text-shadow: none; font-size: 0.85em; line-height: 1.5; }
 /* Let highlight.js theme colors take over when hljs is active */
 .md-render pre code.hljs { background: transparent; border: none; text-shadow: none; font-size: 0.85em; line-height: 1.5; color: inherit; padding: 0; }
-.md-render blockquote { border-left: 3px solid var(--neon-cyan); padding: 4px 12px; margin: 12px 0; color: var(--text-secondary); background: rgba(0, 240, 255, 0.03); border-radius: 0 4px 4px 0; }
+.md-render blockquote { border-left: 3px solid var(--neon-cyan); padding: 4px 12px; margin: 12px 0; color: var(--text-secondary); background: rgba(8, 145, 178, 0.05); border-radius: 0 4px 4px 0; }
 .md-render a { color: var(--neon-blue); text-decoration: none; text-shadow: 0 0 5px rgba(0, 184, 255, 0.4); }
 .md-render a:hover { text-decoration: underline; }
 .md-render table { border-collapse: collapse; width: 100%; margin: 12px 0; }
@@ -132,11 +132,9 @@ html, body {
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-void); }
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--neon-cyan), var(--neon-magenta));
+    background: linear-gradient(180deg, #b9c5d6, #93a5bd);
     border-radius: 3px;
-    box-shadow: 0 0 8px rgba(0, 240, 255, 0.6), 0 0 15px rgba(0, 240, 255, 0.2);
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, var(--neon-magenta), var(--neon-cyan));
-    box-shadow: 0 0 10px rgba(255, 0, 204, 0.7), 0 0 20px rgba(255, 0, 204, 0.3);
+    background: linear-gradient(180deg, #93a5bd, #64748b);
 }

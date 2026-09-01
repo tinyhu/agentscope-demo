@@ -276,10 +276,11 @@ public class ChatController {
     @GetMapping("/api/agents")
     @ResponseBody
     public List<AgentConfig> listAgents() {
-        return agentConfigService.getAllAgents().stream()
+        var data = agentConfigService.getAllAgents().stream()
                 .filter(this::isAgentEnabled)
                 .map(this::toAgentConfigPreview)
                 .toList();
+        return data;
     }
 
     /**
