@@ -20,7 +20,11 @@ mvn spring-boot:run
 mvn spring-boot:run -Dspring-boot.run.arguments="--agentscope.model.dashscope.api-key=your_key"
 ```
 
-App runs on http://localhost:8080.
+App runs on http://localhost:8081 (port set in `application.yml`).
+
+Optional runtime dependencies (app starts fine without them):
+- Node.js/npx — MCP demo servers via supergateway (ports 9090/9091); auto-skipped with a warning if absent
+- Docker — only needed by the `sandbox-artifact-demo` agent (DOCKER sandbox mode, pulls `python:3.11-slim`); all other harness agents use LOCAL mode
 
 ## Architecture
 
