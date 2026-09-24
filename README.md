@@ -82,14 +82,12 @@ export DASHSCOPE_API_KEY=your_api_key_here
 mvn spring-boot:run
 ```
 
-启动后访问 http://localhost:8080
+启动后访问 http://localhost:8081（端口配置见 `src/main/resources/application.yml`）
 
-### Docker 运行（可选）
+**可选依赖**（缺失不影响启动，仅对应功能降级）：
 
-```bash
-docker build -t agentscope-demo .
-docker run -p 8080:8080 -e DASHSCOPE_API_KEY=your_key agentscope-demo
-```
+- **Node.js/npx**：MCP 演示服务器（supergateway 桥，占用 9090/9091 端口）需要；未安装时自动跳过
+- **Docker**：仅 `sandbox-artifact-demo` 这一个 agent（DOCKER 沙箱模式）需要；其余 agent 均为本地执行
 
 ## 使用示例
 
