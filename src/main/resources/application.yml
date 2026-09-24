@@ -33,7 +33,7 @@ agentscope:
       # API key (can be overridden by DASHSCOPE_API_KEY environment variable)
       api-key: ${DASHSCOPE_API_KEY:}
       # Model name
-      model-name: deepseek-v4-flash-0731
+      model-name: deepseek-v4.1-flash
       # Enable streaming
       stream: true
       # Enable thinking mode
