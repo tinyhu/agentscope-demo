@@ -1,26 +1,8 @@
 schema_version: 1
-module_path: agent_harness_cli
+module_path: root/agent_harness_cli
 title: AgentScope Demo CLI Harness
 scope:
     - agent-harness/
 source_files: []
 depends_on: []
 related_to: []
-kk_module_id: d70ac138-9bd0-44d1-9867-13861835906a
-kk_ordinal: 13
-kk_cards:
-    architecture_design:
-        id: 7891d6e1-eac1-43b0-ab77-17242cccdf59
-        title: AgentScope Demo CLI Harness
-    coding_conventions:
-        id: 5359dda8-ad84-496b-b439-6b151bb1a487
-        title: AgentScope Demo CLI Harness
-    overview:
-        id: edee0b90-d876-4502-be14-95a458459518
-        title: AgentScope Demo CLI Harness
-    tech_stack:
-        id: 6185d8bd-557b-487b-9a0d-b7a968040fe2
-        title: AgentScope Demo CLI Harness
-    unique_setup_and_commands:
-        id: a10bca05-f274-48b3-b66f-c38b9b16319e
-        title: AgentScope Demo CLI Harness

@@ -1,5 +1,5 @@
 schema_version: 1
-module_path: schema
+module_path: root/schema
 title: 结构化输出数据模型（Schema）
 scope:
     - src/main/java/com/skloda/agentscope/schema/
@@ -7,18 +7,3 @@ scope:
 source_files: []
 depends_on: []
 related_to: []
-kk_module_id: 62ebd976-9741-469c-9849-0f9d405b2e94
-kk_ordinal: 12
-kk_cards:
-    architecture_design:
-        id: 80859f96-ba0b-4d30-8479-98c6b3455e4d
-        title: 结构化输出数据模型（Schema）
-    coding_conventions:
-        id: faf9fba2-6c0a-4b43-9ea5-8d6413b3a495
-        title: 结构化输出数据模型（Schema）
-    overview:
-        id: 6a51f72c-62ce-43e6-bd97-2a6e8bd689e0
-        title: 结构化输出数据模型（Schema）
-    tech_stack:
-        id: 16526071-d9cf-474d-ba89-6328c0704d6f
-        title: 结构化输出数据模型（Schema）

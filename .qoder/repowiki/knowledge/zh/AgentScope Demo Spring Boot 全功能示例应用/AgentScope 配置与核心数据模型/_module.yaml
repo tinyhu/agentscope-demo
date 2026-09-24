@@ -1,5 +1,5 @@
 schema_version: 1
-module_path: config_and_models
+module_path: root/config_and_models
 title: AgentScope 配置与核心数据模型
 scope:
     - src/main/java/com/skloda/agentscope/config/
@@ -8,23 +8,4 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: agent_core
-      reason: AgentConfigService 从 classpath agents.yml/harness-agents.yml 反序列化为 AgentConfig/HarnessConfig 等 DTO（定义在 model 包），并由 AgentFactory 消费。
-kk_module_id: cb18fafb-46ec-45b8-bc79-b58128437e88
-kk_ordinal: 10
-kk_cards:
-    architecture_design:
-        id: 9bb66fe0-1c65-4f60-9051-845d30dea324
-        title: AgentScope 配置与核心数据模型
-    coding_conventions:
-        id: 7558c469-864c-45ec-a575-caedd6159fd5
-        title: AgentScope 配置与核心数据模型
-    overview:
-        id: c63b884e-e113-4af4-8900-a7c4877d1f5d
-        title: AgentScope 配置与核心数据模型
-    tech_stack:
-        id: dc7b9645-e29c-46ad-b186-4450fdcc5d0f
-        title: AgentScope 配置与核心数据模型
-    unique_setup_and_commands:
-        id: 6ab3142c-6e9b-49bd-a3ef-2f4af5df6301
-        title: AgentScope 配置与核心数据模型
+    - path: root/agent_core

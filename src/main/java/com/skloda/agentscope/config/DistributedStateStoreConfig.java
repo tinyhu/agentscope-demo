@@ -113,6 +113,6 @@ public class DistributedStateStoreConfig {
     @Profile("postgresql")
     public AgentStateStore postgresStateStore(DataSource dataSource) {
         log.info("S13: PostgresAgentStateStore initialized");
-        return new PostgresAgentStateStore(dataSource);
+        return new PostgresAgentStateStore(dataSource,true);
     }
 }

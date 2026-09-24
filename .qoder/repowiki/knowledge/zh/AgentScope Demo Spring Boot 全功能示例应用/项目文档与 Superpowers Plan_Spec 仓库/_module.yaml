@@ -1,26 +1,8 @@
 schema_version: 1
-module_path: docs
+module_path: root/docs
 title: 项目文档与 Superpowers Plan/Spec 仓库
 scope:
     - docs/
 source_files: []
 depends_on: []
 related_to: []
-kk_module_id: d0834f4b-2bc0-4618-b834-896b9c035ead
-kk_ordinal: 14
-kk_cards:
-    architecture_design:
-        id: 14226790-5318-4ca4-9ecd-dfac5c3de62d
-        title: 项目文档与 Superpowers Plan/Spec 仓库
-    coding_conventions:
-        id: 9a1c4c9c-4b55-45bb-96d1-1f7174981ff8
-        title: 项目文档与 Superpowers Plan/Spec 仓库
-    overview:
-        id: 28725944-6c0c-40a4-8579-cb71879f3f48
-        title: 项目文档与 Superpowers Plan/Spec 仓库
-    tech_stack:
-        id: 3664f10f-e3c0-4e4e-a1af-de2bb928df6e
-        title: 项目文档与 Superpowers Plan/Spec 仓库
-    unique_setup_and_commands:
-        id: 26b3c760-7d35-4df1-8e25-d8cf53f3e941
-        title: 项目文档与 Superpowers Plan/Spec 仓库

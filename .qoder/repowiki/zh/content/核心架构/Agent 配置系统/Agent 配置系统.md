@@ -14,7 +14,18 @@
 - [AgentType.java](file://src/main/java/com/skloda/agentscope/agent/AgentType.java)
 - [agents.yml](file://src/main/resources/config/agents.yml)
 - [harness-agents.yml](file://src/main/resources/config/harness-agents.yml)
+- [DocxParserTool.java](file://src/main/java/com/skloda/agentscope/tool/DocxParserTool.java)
+- [PdfParserTool.java](file://src/main/java/com/skloda/agentscope/tool/PdfParserTool.java)
+- [XlsxParserTool.java](file://src/main/java/com/skloda/agentscope/tool/XlsxParserTool.java)
 </cite>
+
+## 更新摘要
+**所做更改**
+- 新增 Tiny Chat agent 配置示例，展示股票分析能力
+- 更新文件解析工具支持说明，包括 DOCX/PDF/XLSX 格式
+- 增强 RAG 配置示例，展示检索限制和阈值设置
+- 补充 deepseek-v4-flash-0731 模型配置最佳实践
+- 更新技能系统集成示例
 
 ## 目录
 1. [简介](#简介)
@@ -31,6 +42,8 @@
 ## 简介
 本章节面向 Agent 配置系统的整体理解。该系统通过 YAML 定义多个 Agent，由 Spring Service 在启动时解析、校验并注入到运行期。每个 Agent 配置覆盖基础标识与行为（名称、描述、提示词）、模型参数、工具与技能挂载、RAG、多模态、权限控制、中间件、会话与会话状态、以及复杂的多 Agent 协同编排（路由、握手、循环、状态图）。此外，针对 Harness 模式还具备独立的能力集（工作空间、文件系统隔离、压缩、记忆分层、计划模式等）。
 
+**更新** 新增了 Tiny Chat agent 配置，展示了现代 Agent 的典型配置模式，包括股票分析能力、文件解析支持和 RAG 集成。
+
 ## 项目结构与配置加载概览
 - 配置文件位于资源目录下的两个 YAML：
   - agents.yml：通用单 Agent / 协作型 Agent 清单
@@ -39,21 +52,21 @@
 
 ```mermaid
 graph TB
-  A["agents.yml<br/>harness-agents.yml"] --> B["YAML 解析器<br/>SnakeYAML"]
-  B --> C["AgentsWrapper<br/>装载 List<AgentConfig>"]
-  C --> D["AgentConfigService.init()<br/>去重/缓存/日志"]
-  D --> E["configMap<String, AgentConfig><br/>allAgents List"]
-  D --> F["skillDescriptions Map"]
-  E --> G["getAgentConfig(agentId)"]
-  E --> H["getAllAgents()"]
-  F --> I["getSkillInfo()/getToolInfo()"]
+A["agents.yml<br/>harness-agents.yml"] --> B["YAML 解析器<br/>SnakeYAML"]
+B --> C["AgentsWrapper<br/>装载 List<AgentConfig>"]
+C --> D["AgentConfigService.init()<br/>去重/缓存/日志"]
+D --> E["configMap<String, AgentConfig><br/>allAgents List"]
+D --> F["skillDescriptions Map"]
+E --> G["getAgentConfig(agentId)"]
+E --> H["getAllAgents()"]
+F --> I["getSkillInfo()/getToolInfo()"]
 ```
 
-图示来源
+**图示来源**
 - [AgentConfigService.java:42-76](file://src/main/java/com/skloda/agentscope/agent/AgentConfigService.java#L42-L76)
 - [AgentConfigService.java:191-196](file://src/main/java/com/skloda/agentscope/agent/AgentConfigService.java#L191-L196)
 
-章节来源
+**章节来源**
 - [AgentConfigService.java:32-76](file://src/main/java/com/skloda/agentscope/agent/AgentConfigService.java#L32-L76)
 - [agents.yml:1-200](file://src/main/resources/config/agents.yml#L1-L200)
 - [harness-agents.yml:1-85](file://src/main/resources/config/harness-agents.yml#L1-L85)
@@ -64,7 +77,9 @@ graph TB
 - AgentConfigService：负责 YAML 加载、合并、去重、技能/工具元信息暴露
 - 其他配合类：AgentType、SubAgentConfig、HandoffTrigger、MsgHubConfig、LoopConfig、StateConfig、SamplePrompt 等
 
-章节来源
+**更新** 新增了对文件解析工具的完整支持，包括 DOCX、PDF 和 XLSX 格式的解析能力。
+
+**章节来源**
 - [AgentConfig.java:15-99](file://src/main/java/com/skloda/agentscope/agent/AgentConfig.java#L15-L99)
 - [HarnessConfig.java:11-133](file://src/main/java/com/skloda/agentscope/agent/HarnessConfig.java#L11-L133)
 - [AgentConfigService.java:23-198](file://src/main/java/com/skloda/agentscope/agent/AgentConfigService.java#L23-L198)
@@ -75,92 +90,91 @@ graph TB
 
 ```mermaid
 classDiagram
-  class AgentConfig {
-    +String agentId
-    +String name
-    +String description
-    +String systemPrompt
-    +String modelName
-    +boolean streaming
-    +boolean enableThinking
-    +List~String~ skills
-    +List~String~ userTools
-    +List~String~ systemTools
-    +String modality
-    +String category
-    +boolean approvalRequired
-    +List~String~ approvalTools
-    +String structuredOutputClass
-    +boolean planEnabled
-    +AgentType type
-    +List~SubAgentConfig~ subAgents
-    +Boolean parallel
-    +List~HandoffTrigger~ handoffTriggers
-    +LoopConfig loopConfig
-    +List~StateConfig~ states
-    +MsgHubConfig msgHubConfig
-    +SharedBlackboardConfig sharedBlackboard
-    +RoutingConfig routingConfig
-    +HarnessConfig harnessConfig
-    +List~McpServerRef~ mcpServers
-    +List~ToolGroupConfig~ toolGroups
-    +List~SamplePrompt~ samplePrompts
-    +List~String~ middlewares
-    +PermissionConfig permissionConfig
-    +SessionConfig sessionConfig
-  }
-  class PermissionConfig {
-    +String defaultMode
-    +List~String~ denyTools
-    +List~String~ askTools
-  }
-  class SessionConfig {
-    +String defaultType
-    +String storagePath
-  }
-  class SharedBlackboardConfig {
-    +boolean enabled
-    +String storageKey
-    +double minConfidence
-  }
-  class RoutingConfig {
-    +String strategy
-    +boolean defaultKeep
-    +String modelName
-    +int recentTurns
-  }
-  class HarnessConfig {
-    +String workspace
-    +String filesystemMode
-    +String executionMode
-    +String isolationScope
-    +CompactionConfig compaction
-    +List~SubAgentRef~ subagents
-    +boolean taskListEnabled
-    +SandboxConfig sandbox
-    +PlanConfig plan
-    +MemoryConfig memory
-    +SkillLearningConfig skillLearning
-  }
-  class SubAgentConfig { +String agentId; +String description; +String role; +String taskTemplate }
-  class HandoffTrigger { +TriggerType type; +List~String~ keywords; +String target }
-  class MsgHubConfig { +int rounds; +String summaryRole }
-  class LoopConfig { +int maxIterations; +String exitCondition }
-  class StateConfig { +String name; +String agent; +List~StateTransition~ transitions }
-
-  AgentConfig --> PermissionConfig : "使用"
-  AgentConfig --> SessionConfig : "使用"
-  AgentConfig --> SharedBlackboardConfig : "可选"
-  AgentConfig --> RoutingConfig : "可选"
-  AgentConfig --> HarnessConfig : "可选(Harness)"
-  AgentConfig --> SubAgentConfig : "多Agent"
-  AgentConfig --> HandoffTrigger : "路由交接"
-  AgentConfig --> MsgHubConfig : "可选"
-  AgentConfig --> LoopConfig : "循环"
-  AgentConfig --> StateConfig : "状态机"
+class AgentConfig {
++String agentId
++String name
++String description
++String systemPrompt
++String modelName
++boolean streaming
++boolean enableThinking
++String[] skills
++String[] userTools
++String[] systemTools
++String modality
++String category
++boolean approvalRequired
++String[] approvalTools
++String structuredOutputClass
++boolean planEnabled
++AgentType type
++SubAgentConfig[] subAgents
++Boolean parallel
++HandoffTrigger[] handoffTriggers
++LoopConfig loopConfig
++StateConfig[] states
++MsgHubConfig msgHubConfig
++SharedBlackboardConfig sharedBlackboard
++RoutingConfig routingConfig
++HarnessConfig harnessConfig
++McpServerRef[] mcpServers
++ToolGroupConfig[] toolGroups
++SamplePrompt[] samplePrompts
++String[] middlewares
++PermissionConfig permissionConfig
++SessionConfig sessionConfig
+}
+class PermissionConfig {
++String defaultMode
++String[] denyTools
++String[] askTools
+}
+class SessionConfig {
++String defaultType
++String storagePath
+}
+class SharedBlackboardConfig {
++boolean enabled
++String storageKey
++double minConfidence
+}
+class RoutingConfig {
++String strategy
++boolean defaultKeep
++String modelName
++int recentTurns
+}
+class HarnessConfig {
++String workspace
++String filesystemMode
++String executionMode
++String isolationScope
++CompactionConfig compaction
++SubAgentRef[] subagents
++boolean taskListEnabled
++SandboxConfig sandbox
++PlanConfig plan
++MemoryConfig memory
++SkillLearningConfig skillLearning
+}
+class SubAgentConfig { +String agentId; +String description; +String role; +String taskTemplate }
+class HandoffTrigger { +TriggerType type; +String[] keywords; +String target }
+class MsgHubConfig { +int rounds; +String summaryRole }
+class LoopConfig { +int maxIterations; +String exitCondition }
+class StateConfig { +String name; +String agent; +StateTransition[] transitions }
+AgentConfig --> PermissionConfig : "使用"
+AgentConfig --> SessionConfig : "使用"
+AgentConfig --> SharedBlackboardConfig : "可选"
+AgentConfig --> RoutingConfig : "可选"
+AgentConfig --> HarnessConfig : "可选(Harness)"
+AgentConfig --> SubAgentConfig : "多Agent"
+AgentConfig --> HandoffTrigger : "路由交接"
+AgentConfig --> MsgHubConfig : "可选"
+AgentConfig --> LoopConfig : "循环"
+AgentConfig --> StateConfig : "状态机"
 ```
 
-图示来源
+**图示来源**
 - [AgentConfig.java:15-99](file://src/main/java/com/skloda/agentscope/agent/AgentConfig.java#L15-L99)
 - [AgentConfig.java:100-186](file://src/main/java/com/skloda/agentscope/agent/AgentConfig.java#L100-L186)
 - [HarnessConfig.java:11-133](file://src/main/java/com/skloda/agentscope/agent/HarnessConfig.java#L11-L133)
@@ -211,7 +225,9 @@ classDiagram
 - 会话
   - sessionConfig：会话类型与存储路径
 
-章节来源
+**更新** 新增了完整的文件解析工具支持，包括 parse_docx、parse_pdf、parse_xlsx 工具，支持 DOCX、PDF 和 XLSX 文件格式的解析。
+
+**章节来源**
 - [AgentConfig.java:15-99](file://src/main/java/com/skloda/agentscope/agent/AgentConfig.java#L15-L99)
 - [AgentConfig.java:100-186](file://src/main/java/com/skloda/agentscope/agent/AgentConfig.java#L100-L186)
 - [SamplePrompt.java:8-27](file://src/main/java/com/skloda/agentscope/agent/SamplePrompt.java#L8-L27)
@@ -229,30 +245,29 @@ classDiagram
 
 ```mermaid
 sequenceDiagram
-  participant S as "Spring 容器"
-  participant CSvc as "AgentConfigService"
-  participant Yaml as "YAML 解析器"
-  participant TR as "ToolRegistry"
-
-  S->>CSvc: @PostConstruct init()
-  CSvc->>Yaml: 解析 agents.yml
-  alt harness-agents.yml 存在
-    CSvc->>Yaml: 解析 harness-agents.yml
-  end
-  Yaml-->>CSvc: AgentsWrapper(agents)
-  loop 遍历每个 AgentConfig
-    CSvc->>CSvc: 校验 agentId 唯一性
-    CSvc->>CSvc: 写入 configMap/allAgents
-  end
-  CSvc->>TR: loadSkillDescriptions()
-  CSvc-->>S: 完成初始化
+participant S as "Spring 容器"
+participant CSvc as "AgentConfigService"
+participant Yaml as "YAML 解析器"
+participant TR as "ToolRegistry"
+S->>CSvc : @PostConstruct init()
+CSvc->>Yaml : 解析 agents.yml
+alt harness-agents.yml 存在
+CSvc->>Yaml : 解析 harness-agents.yml
+end
+Yaml-->>CSvc : AgentsWrapper(agents)
+loop 遍历每个 AgentConfig
+CSvc->>CSvc : 校验 agentId 唯一性
+CSvc->>CSvc : 写入 configMap/allAgents
+end
+CSvc->>TR : loadSkillDescriptions()
+CSvc-->>S : 完成初始化
 ```
 
-图示来源
+**图示来源**
 - [AgentConfigService.java:42-76](file://src/main/java/com/skloda/agent/AgentConfigService.java#L42-L76)
 - [AgentConfigService.java:78-88](file://src/main/java/com/skloda/agent/AgentConfigService.java#L78-L88)
 
-章节来源
+**章节来源**
 - [AgentConfigService.java:42-108](file://src/main/java/com/skloda/agentscope/agent/AgentConfigService.java#L42-L108)
 - [AgentConfigService.java:110-189](file://src/main/java/com/skloda/agentscope/agent/AgentConfigService.java#L110-L189)
 
@@ -267,7 +282,7 @@ sequenceDiagram
 - 权限：permissionConfig.defaultMode/denyTools/askTools
 - 技能自学习：skillLearning.manageToolEnabled/autoPromote/securityScan/curatorEnabled/curatorIntervalHours/staleAfterDays/archiveAfterDays
 
-章节来源
+**章节来源**
 - [HarnessConfig.java:11-133](file://src/main/java/com/skloda/agentscope/agent/HarnessConfig.java#L11-L133)
 
 ### 多 Agent 协作与状态图
@@ -282,30 +297,30 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-  Start(["开始"]) --> CheckType{"检查 AgentType"}
-  CheckType -->|SINGLE| EndA["直接运行单一 Agent"]
-  CheckType -->|SEQUENTIAL/PARALLEL| Multi["构建子 Agent 列表"]
-  CheckType -->|ROUTING/HANDOFFS| Route["依据 HandoffTriggers 进行分发"]
-  CheckType -->|LOOP| Loop["进入循环执行业务闭环"]
-  CheckType -->|STATE_GRAPH| Graph["进入状态图流转"]
-  CheckType -->|MSG_HUB| Hub["接入消息中心协作"]
-  CheckType -->|HARNESS| Harness["启用 Harness 能力集"]
-  Route --> EndB["结束"]
-  Multi --> EndC["结束"]
-  Loop --> EndD["结束"]
-  Graph --> EndE["结束"]
-  Hub --> EndF["结束"]
-  Harness --> EndG["结束"]
+Start(["开始"]) --> CheckType{"检查 AgentType"}
+CheckType --> |SINGLE| EndA["直接运行单一 Agent"]
+CheckType --> |SEQUENTIAL/PARALLEL| Multi["构建子 Agent 列表"]
+CheckType --> |ROUTING/HANDOFFS| Route["依据 HandoffTriggers 进行分发"]
+CheckType --> |LOOP| Loop["进入循环执行业务闭环"]
+CheckType --> |STATE_GRAPH| Graph["进入状态图流转"]
+CheckType --> |MSG_HUB| Hub["接入消息中心协作"]
+CheckType --> |HARNESS| Harness["启用 Harness 能力集"]
+Route --> EndB["结束"]
+Multi --> EndC["结束"]
+Loop --> EndD["结束"]
+Graph --> EndE["结束"]
+Hub --> EndF["结束"]
+Harness --> EndG["结束"]
 ```
 
-图示来源
+**图示来源**
 - [AgentType.java:1-27](file://src/main/java/com/skloda/agentscope/agent/AgentType.java#L1-L27)
 - [SubAgentConfig.java:1-18](file://src/main/java/com/skloda/agentscope/agent/SubAgentConfig.java#L1-L18)
 - [HandoffTrigger.java:14-26](file://src/main/java/com/skloda/agentscope/agent/HandoffTrigger.java#L14-L26)
 - [LoopConfig.java:8-15](file://src/main/java/com/skloda/agentscope/agent/LoopConfig.java#L8-L15)
 - [StateConfig.java:8-17](file://src/main/java/com/skloda/agentscope/agent/StateConfig.java#L8-L17)
 
-章节来源
+**章节来源**
 - [AgentType.java:1-27](file://src/main/java/com/skloda/agentscope/agent/AgentType.java#L1-L27)
 - [SubAgentConfig.java:1-18](file://src/main/java/com/skloda/agentscope/agent/SubAgentConfig.java#L1-L18)
 - [HandoffTrigger.java:1-27](file://src/main/java/com/skloda/agentscope/agent/HandoffTrigger.java#L1-L27)
@@ -320,9 +335,11 @@ flowchart TD
   - 权限/审计/速率限制等中间件通过名称列表绑定
   - MCP 服务器与工具组为横向扩展点
 - 继承与层次
-  - AgentConfig 通过嵌套内部类实现“配置树”，避免过深包层级，同时保持强类型
+  - AgentConfig 通过嵌套内部类实现"配置树"，避免过深包层级，同时保持强类型
 
-章节来源
+**更新** 新增了文件解析工具的依赖关系，包括 Apache POI 用于 DOCX/XLSX 解析和 PDFBox 用于 PDF 解析。
+
+**章节来源**
 - [AgentConfigService.java:49-76](file://src/main/java/com/skloda/agentscope/agent/AgentConfigService.java#L49-L76)
 - [AgentConfigService.java:110-189](file://src/main/java/com/skloda/agentscope/agent/AgentConfigService.java#L110-L189)
 - [AgentConfig.java:100-186](file://src/main/java/com/skloda/agentscope/agent/AgentConfig.java#L100-L186)
@@ -334,6 +351,8 @@ flowchart TD
   - 自动上下文与压缩可减少长对话 Token 压力
   - Harness 的分层记忆将每日事实持久化，降低重复检索成本
   - 路由与状态图减少不必要的 LLM 调用，聚焦关键分支
+
+**更新** 文件解析功能需要考虑大文件的处理性能，建议使用分页处理和流式解析来优化内存使用。
 
 [本节为通用指导，不直接分析具体文件]
 
@@ -355,44 +374,127 @@ flowchart TD
   - 定位：优先区分工具的实际名称与约定名，必要时将 denyTools/askTools 与工具名对齐
 - RAG 相关
   - 说明：v1 RAG API 已标注弃用，建议在 Harness 中使用 MemoryConfig 替代
+- 文件解析问题
+  - 现象：上传的文件无法正确解析
+  - 定位：检查文件格式是否正确，文件路径是否有效
+  - 处理：确保文件支持 DOCX、PDF、XLSX 格式，并验证文件完整性
 
-章节来源
+**章节来源**
 - [AgentConfigService.java:54-65](file://src/main/java/com/skloda/agentscope/agent/AgentConfigService.java#L54-L65)
 - [AgentConfig.java:32-40](file://src/main/java/com/skloda/agentscope/agent/AgentConfig.java#L32-L40)
 - [HarnessConfig.java:17-38](file://src/main/java/com/skloda/agentscope/agent/HarnessConfig.java#L17-L38)
 
 ## 结论
-该配置系统以 AgentConfig 为中心，通过 YAML 驱动的方式实现了“一个配置即一个可运行的 Agent”的目标。它兼顾基础对话、工具/技能集成、RAG（兼容旧 API）、多模态、权限与安全、中间件、会话、共享黑板与路由策略，并针对 Harness 模式提供丰富的企业级能力。AgentConfigService 简化了配置的加载与管理，使新增 Agent 只需编辑 YAML 即可完成装配。
+该配置系统以 AgentConfig 为中心，通过 YAML 驱动的方式实现了"一个配置即一个可运行的 Agent"的目标。它兼顾基础对话、工具/技能集成、RAG（兼容旧 API）、多模态、权限与安全、中间件、会话、共享黑板与路由策略，并针对 Harness 模式提供丰富的企业级能力。AgentConfigService 简化了配置的加载与管理，使新增 Agent 只需编辑 YAML 即可完成装配。
+
+**更新** 新增的 Tiny Chat agent 展示了现代 Agent 的最佳实践，包括股票分析能力、文件解析支持和 RAG 集成，为开发者提供了清晰的配置参考。
 
 [本节为总结性内容，无需列出来源]
 
 ## 附录：配置示例与最佳实践
 
 ### 配置示例（来自仓库）
-- 基础对话示例：chat-basic
-  - 重点：开启流式与思考、设置示例 Prompt
-  - 参考
-    - [agents.yml:1-29](file://src/main/resources/config/agents.yml#L1-L29)
-- 工具调用示例：tool-test-simple
-  - 重点：userTools/systemTools 绑定
-  - 参考
-    - [agents.yml:30-61](file://src/main/resources/config/agents.yml#L30-L61)
-- 文档分析示例：task-document-analysis
-  - 重点：Skills + 文件解析工具
-  - 参考
-    - [agents.yml:62-91](file://src/main/resources/config/agents.yml#L62-L91)
-- 银行发票生成示例：bank-invoice
-  - 重点：审批工具、复杂流程提示词与示例 Prompt
-  - 参考
-    - [agents.yml:92-170](file://src/main/resources/config/agents.yml#L92-L170)
-- RAG 示例：rag-chat
-  - 重点：RAG 启用的 v1 配置及检索参数（已弃用，推荐改用 MemoryConfig）
-  - 参考
-    - [agents.yml:171-200](file://src/main/resources/config/agents.yml#L171-L200)
-- Harness 示例（Claw/Builder）
-  - 重点：工作区、执行模式、权限、压缩、子代理
-  - 参考
-    - [harness-agents.yml:1-85](file://src/main/resources/config/harness-agents.yml#L1-L85)
+
+#### Tiny Chat Agent - 股票分析助手
+**新增** 这是最新的 Tiny Chat agent 配置，展示了现代 Agent 的典型配置模式：
+
+```yaml
+- agentId: tiny-agent
+  category: single
+  name: Tiny Chat
+  description: 冷月Agent，AI助手交流
+  systemPrompt: |
+    你是一个股票分析AI助手。
+    请保持简洁、清晰地回答股票行情及基本面的相关问题。
+  modelName: deepseek-v4-flash-0731
+  streaming: true
+  enableThinking: true
+  skills:
+    - docx
+    - pdf
+    - xlsx
+  userTools:
+    - parse_docx
+    - parse_pdf
+    - parse_xlsx
+  systemTools: [ ]
+  autoContext: true
+  autoContextMsgThreshold: 30
+  autoContextLastKeep: 10
+  autoContextTokenRatio: 0.3
+  ragEnabled: true
+  ragRetrieveLimit: 3
+  ragScoreThreshold: 0.5
+  samplePrompts:
+    - prompt: "请分析一下中际旭创近期的股票行情"
+      expectedBehavior: "展示做该股票的行情、基本面分析"
+```
+
+**特点**：
+- 使用 deepseek-v4-flash-0731 模型，适合快速响应
+- 集成了 DOCX、PDF、XLSX 文件解析技能
+- 启用了 RAG 功能，支持知识库检索
+- 配置了合理的上下文管理参数
+
+**章节来源**
+- [agents.yml:1-31](file://src/main/resources/config/agents.yml#L1-L31)
+
+#### 基础对话示例：chat-basic
+- 重点：开启流式与思考、设置示例 Prompt
+- 参考
+  - [agents.yml:32-58](file://src/main/resources/config/agents.yml#L32-L58)
+
+#### 工具调用示例：tool-test-simple
+- 重点：userTools/systemTools 绑定
+- 参考
+  - [agents.yml:60-91](file://src/main/resources/config/agents.yml#L60-L91)
+
+#### 文档分析示例：task-document-analysis
+- 重点：Skills + 文件解析工具
+- 参考
+  - [agents.yml:92-121](file://src/main/resources/config/agents.yml#L92-L121)
+
+#### 银行发票生成示例：bank-invoice
+- 重点：审批工具、复杂流程提示词与示例 Prompt
+- 参考
+  - [agents.yml:122-200](file://src/main/resources/config/agents.yml#L122-L200)
+
+#### RAG 示例：rag-chat
+- 重点：RAG 启用的 v1 配置及检索参数（已弃用，推荐改用 MemoryConfig）
+- 参考
+  - [agents.yml:201-231](file://src/main/resources/config/agents.yml#L201-L231)
+
+#### Harness 示例（Claw/Builder）
+- 重点：工作区、执行模式、权限、压缩、子代理
+- 参考
+  - [harness-agents.yml:1-85](file://src/main/resources/config/harness-agents.yml#L1-L85)
+
+### 文件解析工具支持
+
+**新增** 系统现在支持三种主要文件格式的解析：
+
+#### DOCX 文件解析
+- 工具名称：`parse_docx`
+- 功能：解析 Word 文档，提取标题、段落、表格和列表
+- 依赖：Apache POI XWPF
+- 适用场景：合同分析、报告提取、文档内容处理
+
+#### PDF 文件解析  
+- 工具名称：`parse_pdf`
+- 功能：提取 PDF 文本内容，支持多页处理和文档元信息
+- 依赖：Apache PDFBox
+- 适用场景：财务报表分析、技术文档处理、扫描件文字提取
+
+#### XLSX 文件解析
+- 工具名称：`parse_xlsx` 
+- 功能：解析 Excel 工作簿，提取工作表名称、表头和行数据
+- 依赖：Apache POI XSSFWorkbook
+- 适用场景：数据分析、报表处理、财务数据提取
+
+**章节来源**
+- [DocxParserTool.java:24-31](file://src/main/java/com/skloda/agentscope/tool/DocxParserTool.java#L24-L31)
+- [PdfParserTool.java:19-21](file://src/main/java/com/skloda/agentscope/tool/PdfParserTool.java#L19-L21)
+- [XlsxParserTool.java:17-19](file://src/main/java/com/skloda/agentscope/tool/XlsxParserTool.java#L17-L19)
 
 ### 如何为新功能添加配置项
 - 步骤
@@ -402,7 +504,14 @@ flowchart TD
   4) 补充单元测试验证默认值与可赋值性
   5) 更新 README 或注释，说明配置用途与影响范围
 - 注意事项
-  - 遵循“可弃用但未删除”的策略，先注解 @Deprecated，再逐步引导迁移到新方案（如 LongTermMemory → Harness MemoryConfig）
+  - 遵循"可弃用但未删除"的策略，先注解 @Deprecated，再逐步引导迁移到新方案（如 LongTermMemory → Harness MemoryConfig）
   - 对敏感字段（如 API Key）应走环境变量或密钥管理，而非硬编码
+  - 新增工具时需要确保 ToolRegistry 能够正确发现和注册
+
+**更新** 对于文件解析功能，建议考虑以下最佳实践：
+- 为大文件提供分页处理能力
+- 实现错误恢复机制，单个文件解析失败不影响其他文件
+- 提供详细的错误信息和调试日志
+- 支持异步处理大型文件解析任务
 
 [本节为操作指导，不包含代码片段]

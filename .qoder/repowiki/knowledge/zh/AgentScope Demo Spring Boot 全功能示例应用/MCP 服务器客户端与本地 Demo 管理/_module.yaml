@@ -1,5 +1,5 @@
 schema_version: 1
-module_path: mcp_integration
+module_path: root/mcp_integration
 title: MCP 服务器客户端与本地 Demo 管理
 scope:
     - src/main/java/com/skloda/agentscope/mcp/
@@ -7,21 +7,3 @@ scope:
 source_files: []
 depends_on: []
 related_to: []
-kk_module_id: 2da38576-53c6-4ba6-864e-2cf7071c54c9
-kk_ordinal: 9
-kk_cards:
-    architecture_design:
-        id: c4ab4b62-2ce4-431a-8588-aa49ca8012d4
-        title: MCP 服务器客户端与本地 Demo 管理
-    coding_conventions:
-        id: 3880617b-ff45-4fbe-813d-9bdecb5ae641
-        title: MCP 服务器客户端与本地 Demo 管理
-    overview:
-        id: 422a3097-d4d1-4922-89f9-26d39aa2a688
-        title: MCP 服务器客户端与本地 Demo 管理
-    tech_stack:
-        id: 410249c3-3207-4174-a8a3-6821160fc925
-        title: MCP 服务器客户端与本地 Demo 管理
-    unique_setup_and_commands:
-        id: 3d476ad3-e876-4684-b261-8cccec52e6d6
-        title: MCP 服务器客户端与本地 Demo 管理

@@ -1,5 +1,5 @@
 schema_version: 1
-module_path: controllers
+module_path: root/controllers
 title: HTTP/Webhook 控制器层 (Chat、知识、工作流、飞书与指标)
 scope:
     - src/main/java/com/skloda/agentscope/controller/
@@ -7,21 +7,3 @@ scope:
 source_files: []
 depends_on: []
 related_to: []
-kk_module_id: 53118998-fb6d-4c79-81e4-8c5b3c433b43
-kk_ordinal: 5
-kk_cards:
-    architecture_design:
-        id: dc9b7fc7-fd11-4d74-81a2-0eb8b1627fba
-        title: HTTP/Webhook 控制器层 (Chat、知识、工作流、飞书与指标)
-    coding_conventions:
-        id: 7d033845-d777-4bdf-b353-15a491056bba
-        title: HTTP/Webhook 控制器层 (Chat、知识、工作流、飞书与指标)
-    overview:
-        id: b6798737-7020-424d-929c-907bbae7e607
-        title: HTTP/Webhook 控制器层 (Chat、知识、工作流、飞书与指标)
-    tech_stack:
-        id: 479d765a-24b1-4334-856f-9264d03b2aed
-        title: HTTP/Webhook 控制器层 (Chat、知识、工作流、飞书与指标)
-    unique_setup_and_commands:
-        id: 64f1d4dc-ebdb-408c-94c3-ba0f863a45e2
-        title: HTTP/Webhook 控制器层 (Chat、知识、工作流、飞书与指标)
