@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: root/controllers
+title: HTTP/Webhook 控制器层 (Chat、知识、工作流、飞书与指标)
+scope:
+    - src/main/java/com/skloda/agentscope/controller/
+    - src/test/java/com/skloda/agentscope/controller/
+source_files: []
+depends_on: []
+related_to:
+    - path: root/agent_harness_cli
+    - path: root/services

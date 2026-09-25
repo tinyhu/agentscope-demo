@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: root/multi_agent
+title: 多Agent组合与状态流转编排
+scope:
+    - src/main/java/com/skloda/agentscope/composite/
+    - src/test/java/com/skloda/agentscope/composite/
+source_files: []
+depends_on: []
+related_to:
+    - path: root/blackboard_supervisor

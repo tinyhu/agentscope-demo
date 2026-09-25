@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: root/middleware
+title: AgentScope 中间件拦截器集合
+scope:
+    - src/main/java/com/skloda/agentscope/middleware/
+    - src/test/java/com/skloda/agentscope/middleware/
+source_files: []
+depends_on: []
+related_to:
+    - path: root/agent_core

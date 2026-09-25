@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: root/agent_core
+title: Agent 配置模型与工厂（AgentScope 2.0 YAML 加载与实例化）
+scope:
+    - src/main/java/com/skloda/agentscope/agent/
+    - src/test/java/com/skloda/agentscope/agent/
+source_files: []
+depends_on: []
+related_to:
+    - path: root/config_and_models
+    - path: root/middleware
+    - path: root/tools
