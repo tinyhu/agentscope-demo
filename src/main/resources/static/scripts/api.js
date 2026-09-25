@@ -79,6 +79,11 @@ export async function fetchAgentMessages(agentId) {
     return await response.json();
 }
 
+export async function fetchSessionMessages(sessionId) {
+    var response = await fetch('/api/sessions/' + encodeURIComponent(sessionId) + '/messages');
+    return await response.json();
+}
+
 /* ===== KNOWLEDGE API ===== */
 export async function fetchKnowledgeDocs() {
     var response = await fetch('/api/knowledge/documents');

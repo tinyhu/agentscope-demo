@@ -29,7 +29,7 @@ class ChatControllerFileTest {
     void setUp() {
         originalTmpDir = System.getProperty("java.io.tmpdir");
         System.setProperty("java.io.tmpdir", tempDir.toString());
-        controller = new ChatController(null, null, null, null, null);
+        controller = new ChatController(null, null, null, null, null, null);
     }
 
     @AfterEach

@@ -481,7 +481,7 @@ agents:
       - get_current_weather: 获取天气信息
       - get_stock_price: 获取股票价格
       - get_news: 获取最新新闻
-    modelName: deepseek-v4.1-flash
+    modelName: qwen3.8-flash
     streaming: true
     enableThinking: true
     autoContext: true

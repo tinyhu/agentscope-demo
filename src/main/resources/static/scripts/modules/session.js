@@ -1,4 +1,4 @@
-import { fetchSessions, createSession, deleteSession as deleteSessionApi, fetchAgentMessages } from '../api.js?v=2.5';
+import { fetchSessions, createSession, deleteSession as deleteSessionApi, fetchAgentMessages, fetchSessionMessages } from '../api.js?v=2.6';
 import { escapeHtml } from './utils.js';
 import { appendMessage } from './ui.js';
 
@@ -10,6 +10,11 @@ export async function loadSessions() {
         if (!listEl) return;  // Element not in current page
 
         listEl.innerHTML = '';
+
+        if (sessions.length === 0) {
+            listEl.innerHTML = '<div class="session-empty">No saved sessions</div>';
+            return;
+        }
 
         sessions.forEach(function(s) {
             var item = document.createElement('div');
@@ -53,20 +58,33 @@ export async function createNewSession(agentId) {
 export async function selectSession(sessionId, agentId) {
     if (window.isStreaming) return;
 
+    // Switch agent first when needed (dynamic import to avoid circular dependency).
+    // Skip its auto session creation: this click restores an existing session,
+    // not a fresh one.
+    if (agentId && agentId !== window.currentAgent) {
+        var { selectAgent } = await import('./agents.js?v=2.7');
+        await selectAgent(agentId, { skipNewSession: true });
+    }
+
     window.currentSessionId = sessionId;
-    clearChatArea();
+
+    // Restore the full history from the database (falls back to the in-memory
+    // transcript when nothing is persisted yet). loadAgentMessages clears the
+    // chat area internally.
+    if (agentId) {
+        await loadAgentMessages(agentId);
+    } else if (sessionId) {
+        await loadSessionMessages(sessionId);
+    } else {
+        clearChatArea();
+    }
     loadSessions();
 
-    // Switch agent if needed (dynamic import to avoid circular dependency)
-    if (agentId && agentId !== window.currentAgent) {
-        var { selectAgent } = await import('./agents.js?v=2.5');
-        await selectAgent(agentId);
-    } else {
-        // Focus input if not switching agents
-        setTimeout(function() {
-            document.getElementById('messageInput').focus();
-        }, 100);
-    }
+    // Focus input after the history render stabilizes the DOM
+    setTimeout(function() {
+        var input = document.getElementById('messageInput');
+        if (input) input.focus();
+    }, 100);
 }
 
 export async function deleteSession(sessionId) {
@@ -150,19 +168,33 @@ async function loadAgentMessages(agentId) {
     clearChatArea();
     try {
         var messages = await fetchAgentMessages(agentId);
-        if (!Array.isArray(messages) || messages.length === 0) {
-            return;
-        }
-        var chatEmpty = document.getElementById('chatEmpty');
-        if (chatEmpty) {
-            chatEmpty.style.display = 'none';
-        }
-        messages.forEach(function(message) {
-            var role = message.role === 'assistant' ? 'agent' : message.role;
-            appendMessage(role, message.content || '', null, message.thinkingContent || '');
-            window.messageCount++;
-        });
+        renderMessages(messages);
     } catch (err) {
         console.error('Failed to load agent messages', err);
     }
+}
+
+async function loadSessionMessages(sessionId) {
+    clearChatArea();
+    try {
+        var messages = await fetchSessionMessages(sessionId);
+        renderMessages(messages);
+    } catch (err) {
+        console.error('Failed to load session messages', err);
+    }
+}
+
+function renderMessages(messages) {
+    if (!Array.isArray(messages) || messages.length === 0) {
+        return;
+    }
+    var chatEmpty = document.getElementById('chatEmpty');
+    if (chatEmpty) {
+        chatEmpty.style.display = 'none';
+    }
+    messages.forEach(function(message) {
+        var role = message.role === 'assistant' ? 'agent' : message.role;
+        appendMessage(role, message.content || '', null, message.thinkingContent || '');
+        window.messageCount++;
+    });
 }

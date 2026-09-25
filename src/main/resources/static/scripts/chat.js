@@ -1,10 +1,10 @@
 import './state.js?v=2.4';
-import { createSSEParser, uploadFile, fetchAgents, fetchSessions, createSession as createSessionApi, deleteSession as deleteSessionApi, fetchKnowledgeDocs, uploadKnowledgeDoc, removeKnowledgeDoc as removeKnowledgeDocApi, fetchSkillInfo, fetchToolInfo } from './api.js?v=2.5';
+import { createSSEParser, uploadFile, fetchAgents, fetchSessions, createSession as createSessionApi, deleteSession as deleteSessionApi, fetchKnowledgeDocs, uploadKnowledgeDoc, removeKnowledgeDoc as removeKnowledgeDocApi, fetchSkillInfo, fetchToolInfo } from './api.js?v=2.6';
 import { renderMarkdown, escapeHtml, getTimestamp, formatDuration, scrollToBottom, createFileList } from './modules/utils.js?v=2.4';
 import { chatMessages, messageInput, sendBtn, chatEmpty, chatHeaderName, chatHeaderDesc, debugPanel, debugRounds, debugToggle, appendMessage, createThinkingBox, updateThinkingBox, collapseThinkingBox, completeThinkingBox, addAgentBubble, addAgentBubbleAfter, removeTypingIndicator, updateTypingIndicator, setStreamingState, showTypingIndicator, createAgentMessageWrapper } from './modules/ui.js?v=2.5';
 import { startRound, endRound, completeRoundTrace, addTimelineRow, addTimelineRowForRound, clearDebug, toggleDebug, handlePipelineStart, handlePipelineStepStart, handlePipelineStepEnd, handleRoutingDecision, handleHandoffStart, updateRoundMetrics, updateRoundMetricsForRound, handleLoopStart, handleLoopEnd, handleLoopIterationResult, handleGraphTransition, handleRoundtableStart, handleRoundMessage, handleTaskDelegate, handleTaskEnd, handleSupervisorStart, handleRoutingEvent, handleExpertDispatchStart, handleExpertDispatchEnd, handleBlackboardPatched, handleUnresolvedQuestions } from './modules/debug.js?v=2.9';
-import { loadAgents, selectAgent, showAgentConfig, showSkillInfo, showToolInfo } from './modules/agents.js?v=2.6';
-import { loadSessions, createNewSession, selectSession, deleteSession, clearSession as clearSessionFn } from './modules/session.js?v=2.6';
+import { loadAgents, selectAgent, showAgentConfig, showSkillInfo, showToolInfo } from './modules/agents.js?v=2.7';
+import { loadSessions, createNewSession, selectSession, deleteSession, clearSession as clearSessionFn } from './modules/session.js?v=2.8';
 import { loadKnowledgeDocs, uploadToKnowledge, removeKnowledgeDoc } from './modules/knowledge.js?v=2.4';
 import { initUpload } from './modules/upload.js?v=2.5';
 
@@ -1119,6 +1119,7 @@ function truncate(str, maxLen) {
 /* ===== GLOBAL FUNCTIONS FOR ONCLICK ===== */
 window.sendMessage = sendMessage;
 window.clearSession = clearSessionFn;
+window.deleteSession = deleteSession;
 window.toggleDebug = toggleDebug;
 window.clearDebug = clearDebug;
 

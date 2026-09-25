@@ -10,6 +10,7 @@ import com.skloda.agentscope.runtime.AgentRuntime;
 import com.skloda.agentscope.service.AgentService;
 import com.skloda.agentscope.service.ApprovalService;
 import com.skloda.agentscope.service.ChatHistoryRepository;
+import com.skloda.agentscope.service.PersistedSessionService;
 import com.skloda.agentscope.service.SessionManagerService;
 import io.agentscope.core.message.ContentBlock;
 import io.agentscope.core.message.Msg;
@@ -36,6 +37,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,17 +59,20 @@ public class ChatController {
     private final SessionManagerService sessionManagerService;
     private final ApprovalService approvalService;
     private final ChatHistoryRepository chatHistoryRepository;
+    private final PersistedSessionService persistedSessionService;
 
     public ChatController(AgentService agentService,
                           AgentConfigService agentConfigService,
                           SessionManagerService sessionManagerService,
                           ApprovalService approvalService,
-                          ChatHistoryRepository chatHistoryRepository) {
+                          ChatHistoryRepository chatHistoryRepository,
+                          PersistedSessionService persistedSessionService) {
         this.agentService = agentService;
         this.agentConfigService = agentConfigService;
         this.sessionManagerService = sessionManagerService;
         this.approvalService = approvalService;
         this.chatHistoryRepository = chatHistoryRepository;
+        this.persistedSessionService = persistedSessionService;
     }
 
     @GetMapping("/")
@@ -210,15 +216,61 @@ public class ChatController {
     // ---- Session Endpoints ----
 
     /**
-     * List all sessions.
+     * List all sessions: in-memory active sessions merged with sessions persisted in the
+     * distributed AgentStateStore (Redis/MySQL/PostgreSQL). The merge makes history survive
+     * a process restart: after a restart the in-memory registries are empty, but the
+     * persisted sessions (with their message counts) are restored from the database.
      */
     @GetMapping("/api/sessions")
     @ResponseBody
     public List<SessionInfo> listSessions() {
-        return sessionManagerService.listSessions().stream()
-                .peek(info -> info.setMessageCount(
-                        chatHistoryRepository.findByAgentId(info.getAgentId()).size()))
-                .toList();
+        Map<String, SessionInfo> merged = new LinkedHashMap<>();
+        Map<String, String> liveSessionByAgent = new HashMap<>();
+
+        // In-memory active sessions first (they carry an accurate lastAccessedAt).
+        for (SessionInfo info : sessionManagerService.listSessions()) {
+            info.setMessageCount(chatHistoryRepository.findByAgentId(info.getAgentId()).size());
+            merged.put(info.getSessionId(), info);
+            if (info.getAgentId() != null) {
+                liveSessionByAgent.put(info.getAgentId(), info.getSessionId());
+            }
+        }
+
+        // Then sessions persisted in the database.
+        for (SessionInfo info : persistedSessionService.listSessions()) {
+            String liveSessionId = liveSessionByAgent.get(info.getSessionId());
+            if (liveSessionId != null && !liveSessionId.equals(info.getSessionId())) {
+                // The agent already has a live session under another id (a fresh chat whose
+                // first message was persisted under the agent's default session id) — both
+                // stand for the same persisted conversation, so keep a single entry with
+                // the newest count.
+                SessionInfo live = merged.get(liveSessionId);
+                if (info.getMessageCount() > live.getMessageCount()) {
+                    live.setMessageCount(info.getMessageCount());
+                }
+                continue;
+            }
+            SessionInfo existing = merged.get(info.getSessionId());
+            if (existing == null) {
+                merged.put(info.getSessionId(), info);
+            } else if (existing.getMessageCount() == 0 && info.getMessageCount() > 0) {
+                // The in-memory transcript is empty (e.g. right after a restart while the
+                // session was re-attached from the DB) — keep the persisted count so the
+                // UI shows the real history size.
+                existing.setMessageCount(info.getMessageCount());
+            }
+        }
+
+        List<SessionInfo> result = new ArrayList<>(merged.values());
+        result.sort((a, b) -> {
+            String ta = a.getLastAccessedAt();
+            String tb = b.getLastAccessedAt();
+            if (ta == null && tb == null) return 0;
+            if (ta == null) return 1;
+            if (tb == null) return -1;
+            return tb.compareTo(ta);
+        });
+        return result;
     }
 
     /**
@@ -244,26 +296,52 @@ public class ChatController {
     }
 
     /**
-     * Delete a session.
+     * Delete a session: clears the in-memory transcript, removes the state persisted in the
+     * distributed AgentStateStore (so a deleted history does not reappear after a refresh)
+     * and evicts the cached session context.
      */
     @DeleteMapping("/api/sessions/{sessionId}")
     @ResponseBody
     public ResponseEntity<?> deleteSession(@PathVariable String sessionId) {
         SessionManagerService.SessionContext ctx = sessionManagerService.getSession(sessionId);
-        if (ctx != null) {
-            chatHistoryRepository.clear(ctx.getAgentId());
+        // The agent persists its conversation under its default session id (== agentId),
+        // regardless of which UI session (possibly a UUID) is currently active — resolve the
+        // owning agent so deleting a live session really clears its persisted history.
+        String owningAgent = ctx != null ? ctx.getAgentId() : sessionId;
+        chatHistoryRepository.clear(owningAgent);
+        persistedSessionService.deleteSession(owningAgent);
+        if (!owningAgent.equals(sessionId)) {
+            persistedSessionService.deleteSession(sessionId);
         }
-        sessionManagerService.deleteSession(sessionId);
+        // Evict every cached context of the owning agent — a surviving live context would
+        // re-save the just-deleted conversation on its next message.
+        sessionManagerService.deleteSessionsByAgent(owningAgent);
         return ResponseEntity.ok(Map.of("deleted", true));
     }
 
     /**
-     * Load the in-memory chat transcript for an agent.
+     * Load the chat transcript for an agent. Prefers the message history persisted in the
+     * distributed AgentStateStore (survives process restarts) and falls back to the
+     * in-memory transcript repository when no persisted history exists yet.
      */
     @GetMapping("/api/agents/{agentId}/messages")
     @ResponseBody
     public List<ChatMessage> listAgentMessages(@PathVariable String agentId) {
+        List<ChatMessage> persisted = persistedSessionService.loadMessages(agentId);
+        if (!persisted.isEmpty()) {
+            return persisted;
+        }
         return chatHistoryRepository.findByAgentId(agentId);
+    }
+
+    /**
+     * Load the persisted chat transcript for a session id. Used by the UI for sessions whose
+     * id is not linked to a configured agent (e.g. sessions persisted under a raw session id).
+     */
+    @GetMapping("/api/sessions/{sessionId}/messages")
+    @ResponseBody
+    public List<ChatMessage> listSessionMessages(@PathVariable String sessionId) {
+        return persistedSessionService.loadMessages(sessionId);
     }
 
     // ---- Agent Config Endpoints ----

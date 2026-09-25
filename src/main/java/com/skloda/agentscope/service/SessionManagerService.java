@@ -88,6 +88,12 @@ public class SessionManagerService {
                 cached.touch();
                 return cached;
             }
+            // Cache miss (e.g. after a process restart, or for a session restored from the
+            // database). Rebuild the context under the SAME sessionId instead of discarding
+            // it — the frontend stays attached to the historical session and the agent state
+            // is reloaded from the AgentStateStore on the next stream call.
+            log.info("Session {} not in memory, rebuilding context for agent {}", sessionId, agentId);
+            return createSessionContext(sessionId, agentId, sessionType);
         }
         return createNewSession(agentId, sessionType);
     }
@@ -120,7 +126,35 @@ public class SessionManagerService {
                     ctx.touch();
                     return ctx;
                 })
-                .orElseGet(() -> createNewSession(agentId));
+                .orElseGet(() -> {
+                    // After a restart the in-memory cache is empty, but the agent may still own a
+                    // conversation persisted in the distributed AgentStateStore (PG/MySQL/Redis
+                    // profile) under its default session id (== agentId). Re-attach to that
+                    // historical session instead of starting an orphan new one, so the restored
+                    // history is continued under the same id.
+                    if (hasPersistedState(agentId)) {
+                        log.info("Re-attaching agent {} to its persisted session", agentId);
+                        return createSessionContext(agentId, agentId, null);
+                    }
+                    return createNewSession(agentId);
+                });
+    }
+
+    /**
+     * Probe the configured AgentStateStore for persisted state of the agent's default
+     * session id ({@code defaultSessionId(agentId)}). Returns false for in-memory stores.
+     */
+    private boolean hasPersistedState(String agentId) {
+        try {
+            AgentConfig config = configService.getAgentConfig(agentId);
+            String effectiveType = resolveSessionType(config, null);
+            String storagePath = config.getSessionConfig() != null
+                    ? config.getSessionConfig().getStoragePath() : null;
+            return agentFactory.createStateStore(effectiveType, storagePath).exists(null, agentId);
+        } catch (Exception e) {
+            log.warn("Persisted-state probe failed for agent {}: {}", agentId, e.getMessage());
+            return false;
+        }
     }
 
     public SessionContext createNewSession(String agentId, String sessionType) {
@@ -185,6 +219,16 @@ public class SessionManagerService {
     public void deleteSession(String sessionId) {
         activeSessions.remove(sessionId);
         log.info("Session {} deleted", sessionId);
+    }
+
+    /**
+     * Remove every cached session context belonging to the given agent. Called when the
+     * agent's persisted history is deleted — a surviving live context would otherwise
+     * re-save the deleted conversation on its next message.
+     */
+    public void deleteSessionsByAgent(String agentId) {
+        activeSessions.entrySet().removeIf(entry -> Objects.equals(entry.getValue().getAgentId(), agentId));
+        log.info("Cached sessions of agent {} evicted", agentId);
     }
 
     public SessionContext getSession(String sessionId) {

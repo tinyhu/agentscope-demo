@@ -4,7 +4,7 @@
 
 /* Import component-specific CSS modules */
 @import url('modules/header.css?v=3.0');
-@import url('modules/sidebar.css?v=3.1');
+@import url('modules/sidebar.css?v=3.2');
 @import url('modules/chat.css?v=3.0');
 @import url('modules/debug.css?v=3.0');
 @import url('modules/upload.css?v=3.0');

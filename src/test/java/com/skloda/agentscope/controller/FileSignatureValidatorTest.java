@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FileSignatureValidatorTest {
 
-    private final ChatController controller = new ChatController(null, null, null, null, null);
+    private final ChatController controller = new ChatController(null, null, null, null, null, null);
 
     @Test
     void validPdfSignature() {

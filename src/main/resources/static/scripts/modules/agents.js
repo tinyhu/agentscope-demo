@@ -1,4 +1,4 @@
-import { fetchAgents, fetchSamplePrompt, fetchSkillInfo, fetchToolInfo, fetchKnowledgeStatus } from '../api.js?v=2.5';
+import { fetchAgents, fetchSamplePrompt, fetchSkillInfo, fetchToolInfo, fetchKnowledgeStatus } from '../api.js?v=2.6';
 import { escapeHtml } from './utils.js';
 import { setStreamingState } from './ui.js';
 import { agents } from '../state.js?v=2.4';
@@ -99,7 +99,7 @@ export async function loadAgents() {
 }
 
 /* ===== SELECT AGENT ===== */
-export async function selectAgent(agentId) {
+export async function selectAgent(agentId, options) {
     removeFile();
     // Force cleanup streaming state to allow switching
     if (window.isStreaming) {
@@ -203,12 +203,15 @@ export async function selectAgent(agentId) {
     window.currentFileInfo = null;
     window.agentRawMarkdown = '';
 
-    // Auto-create a new session for this agent (dynamic import to avoid circular dependency)
-    try {
-        var sessionModule = await import('./session.js?v=2.5');
-        await sessionModule.createNewSession(agentId);
-    } catch (err) {
-        console.error('Failed to create session:', err);
+    // Auto-create a new session for this agent unless the caller manages the session
+    // itself (e.g. selectSession restoring a persisted session).
+    if (!(options && options.skipNewSession)) {
+        try {
+            var sessionModule = await import('./session.js?v=2.8');
+            await sessionModule.createNewSession(agentId);
+        } catch (err) {
+            console.error('Failed to create session:', err);
+        }
     }
 
     // Focus input AFTER session creation to ensure DOM is stable

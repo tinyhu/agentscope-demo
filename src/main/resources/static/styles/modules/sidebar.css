@@ -469,6 +469,32 @@
     transition: max-height 0.25s ease, opacity 0.15s ease;
 }
 
+/* ===== SESSIONS PANEL ===== */
+.sidebar-sessions-header {
+    border-top: 1px solid var(--border-accent);
+}
+
+.session-list {
+    flex: 0 0 auto;
+    max-height: 34%;
+    overflow-y: auto;
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--border-dim);
+}
+
+.session-msg-count {
+    color: var(--neon-blue);
+    font-size: 10px;
+}
+
+.session-empty {
+    padding: var(--space-md);
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
 /* ===== SESSION LIST ===== */
 .session-item {
     display: flex;
