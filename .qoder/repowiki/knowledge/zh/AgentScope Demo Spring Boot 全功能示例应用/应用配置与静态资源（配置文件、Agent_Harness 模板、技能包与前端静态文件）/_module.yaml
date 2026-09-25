@@ -1,9 +1,0 @@
-schema_version: 1
-module_path: root/resources_and_static
-title: 应用配置与静态资源（配置文件、Agent/Harness 模板、技能包与前端静态文件）
-scope:
-    - src/main/resources/
-    - target/classes/
-source_files: []
-depends_on: []
-related_to: []

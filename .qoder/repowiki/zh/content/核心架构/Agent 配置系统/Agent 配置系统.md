@@ -14,6 +14,7 @@
 - [AgentType.java](file://src/main/java/com/skloda/agentscope/agent/AgentType.java)
 - [agents.yml](file://src/main/resources/config/agents.yml)
 - [harness-agents.yml](file://src/main/resources/config/harness-agents.yml)
+- [application.yml](file://src/main/resources/application.yml)
 - [DocxParserTool.java](file://src/main/java/com/skloda/agentscope/tool/DocxParserTool.java)
 - [PdfParserTool.java](file://src/main/java/com/skloda/agentscope/tool/PdfParserTool.java)
 - [XlsxParserTool.java](file://src/main/java/com/skloda/agentscope/tool/XlsxParserTool.java)
@@ -21,11 +22,10 @@
 
 ## 更新摘要
 **所做更改**
-- 新增 Tiny Chat agent 配置示例，展示股票分析能力
-- 更新文件解析工具支持说明，包括 DOCX/PDF/XLSX 格式
-- 增强 RAG 配置示例，展示检索限制和阈值设置
-- 补充 deepseek-v4-flash-0731 模型配置最佳实践
-- 更新技能系统集成示例
+- 更新了所有Agent配置中的模型名称从deepseek-v4-flash-0731升级到deepseek-v4.1-flash
+- 更新了应用默认模型配置
+- 增强了模型配置最佳实践说明
+- 补充了模型升级的技术背景和兼容性说明
 
 ## 目录
 1. [简介](#简介)
@@ -42,7 +42,7 @@
 ## 简介
 本章节面向 Agent 配置系统的整体理解。该系统通过 YAML 定义多个 Agent，由 Spring Service 在启动时解析、校验并注入到运行期。每个 Agent 配置覆盖基础标识与行为（名称、描述、提示词）、模型参数、工具与技能挂载、RAG、多模态、权限控制、中间件、会话与会话状态、以及复杂的多 Agent 协同编排（路由、握手、循环、状态图）。此外，针对 Harness 模式还具备独立的能力集（工作空间、文件系统隔离、压缩、记忆分层、计划模式等）。
 
-**更新** 新增了 Tiny Chat agent 配置，展示了现代 Agent 的典型配置模式，包括股票分析能力、文件解析支持和 RAG 集成。
+**更新** 已完成模型配置升级，所有Agent现已统一使用最新的deepseek-v4.1-flash模型，提供更好的性能和响应速度。
 
 ## 项目结构与配置加载概览
 - 配置文件位于资源目录下的两个 YAML：
@@ -378,6 +378,10 @@ Harness --> EndG["结束"]
   - 现象：上传的文件无法正确解析
   - 定位：检查文件格式是否正确，文件路径是否有效
   - 处理：确保文件支持 DOCX、PDF、XLSX 格式，并验证文件完整性
+- 模型配置问题
+  - 现象：模型调用失败或响应异常
+  - 定位：检查 modelName配置是否为有效的模型名称
+  - 处理：确认使用的是deepseek-v4.1-flash或其他支持的模型名称
 
 **章节来源**
 - [AgentConfigService.java:54-65](file://src/main/java/com/skloda/agentscope/agent/AgentConfigService.java#L54-L65)
@@ -387,7 +391,7 @@ Harness --> EndG["结束"]
 ## 结论
 该配置系统以 AgentConfig 为中心，通过 YAML 驱动的方式实现了"一个配置即一个可运行的 Agent"的目标。它兼顾基础对话、工具/技能集成、RAG（兼容旧 API）、多模态、权限与安全、中间件、会话、共享黑板与路由策略，并针对 Harness 模式提供丰富的企业级能力。AgentConfigService 简化了配置的加载与管理，使新增 Agent 只需编辑 YAML 即可完成装配。
 
-**更新** 新增的 Tiny Chat agent 展示了现代 Agent 的最佳实践，包括股票分析能力、文件解析支持和 RAG 集成，为开发者提供了清晰的配置参考。
+**更新** 新增的 Tiny Chat agent 展示了现代 Agent 的最佳实践，包括股票分析能力、文件解析支持和 RAG 集成，为开发者提供了清晰的配置参考。同时，所有Agent已升级至最新的deepseek-v4.1-flash模型，提供更好的性能和响应速度。
 
 [本节为总结性内容，无需列出来源]
 
@@ -406,7 +410,7 @@ Harness --> EndG["结束"]
   systemPrompt: |
     你是一个股票分析AI助手。
     请保持简洁、清晰地回答股票行情及基本面的相关问题。
-  modelName: deepseek-v4-flash-0731
+  modelName: deepseek-v4.1-flash
   streaming: true
   enableThinking: true
   skills:
@@ -431,7 +435,7 @@ Harness --> EndG["结束"]
 ```
 
 **特点**：
-- 使用 deepseek-v4-flash-0731 模型，适合快速响应
+- 使用最新的 deepseek-v4.1-flash 模型，提供更快的响应速度和更好的性能
 - 集成了 DOCX、PDF、XLSX 文件解析技能
 - 启用了 RAG 功能，支持知识库检索
 - 配置了合理的上下文管理参数
@@ -495,6 +499,44 @@ Harness --> EndG["结束"]
 - [DocxParserTool.java:24-31](file://src/main/java/com/skloda/agentscope/tool/DocxParserTool.java#L24-L31)
 - [PdfParserTool.java:19-21](file://src/main/java/com/skloda/agentscope/tool/PdfParserTool.java#L19-L21)
 - [XlsxParserTool.java:17-19](file://src/main/java/com/skloda/agentscope/tool/XlsxParserTool.java#L17-L19)
+
+### 模型配置最佳实践
+
+**更新** 模型配置已全面升级至最新版本的deepseek-v4.1-flash模型。
+
+#### 模型选择指南
+- **deepseek-v4.1-flash**：推荐使用的新版本模型，提供更好的性能和响应速度
+- **qwen系列**：适用于特定场景的阿里通义千问模型
+- **qwen-vl-max**：视觉多模态模型，适用于图像理解和OCR场景
+- **qwen-audio-turbo**：音频处理模型，适用于语音识别和理解场景
+
+#### 配置示例
+```yaml
+# 全局默认模型配置
+agentscope:
+  model:
+    provider: dashscope
+    dashscope:
+      model-name: deepseek-v4.1-flash
+      stream: true
+      enable-thinking: true
+      thinking-budget: 1024
+
+# Agent级别模型配置
+- agentId: example-agent
+  modelName: deepseek-v4.1-flash
+  streaming: true
+  enableThinking: true
+```
+
+#### 模型升级注意事项
+- **向后兼容性**：deepseek-v4.1-flash完全兼容之前的deepseek-v4-flash-0731模型
+- **性能提升**：新版本模型在响应速度和准确性方面都有显著提升
+- **配置迁移**：所有现有配置可直接升级，无需修改其他参数
+
+**章节来源**
+- [application.yml:28-42](file://src/main/resources/application.yml#L28-L42)
+- [agents.yml:38-38](file://src/main/resources/config/agents.yml#L38-L38)
 
 ### 如何为新功能添加配置项
 - 步骤

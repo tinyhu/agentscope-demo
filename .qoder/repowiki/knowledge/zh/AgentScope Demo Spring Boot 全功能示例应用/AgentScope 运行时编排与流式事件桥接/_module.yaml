@@ -1,9 +1,0 @@
-schema_version: 1
-module_path: root/runtime_engine
-title: AgentScope 运行时编排与流式事件桥接
-scope:
-    - src/main/java/com/skloda/agentscope/runtime/
-    - src/test/java/com/skloda/agentscope/runtime/
-source_files: []
-depends_on: []
-related_to: []

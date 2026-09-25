@@ -1,10 +1,11 @@
 # Harness Agent 框架技术文档
 
 <cite>
-**本文档引用的文件**   
+**本文引用的文件**   
 - [HarnessRuntime.java](file://src/main/java/com/skloda/agentscope/harness/HarnessRuntime.java)
 - [HarnessAgentFactory.java](file://src/main/java/com/skloda/agentscope/harness/HarnessAgentFactory.java)
 - [HarnessAgentService.java](file://src/main/java/com/skloda/agentscope/harness/HarnessAgentService.java)
+- [UploadsArtifactDeliveryTarget.java](file://src/main/java/com/skloda/agentscope/harness/UploadsArtifactDeliveryTarget.java)
 - [HarnessConfig.java](file://src/main/java/com/skloda/agentscope/agent/HarnessConfig.java)
 - [CompactionConfigFactory.java](file://src/main/java/com/skloda/agentscope/harness/CompactionConfigFactory.java)
 - [FilesystemSpecFactory.java](file://src/main/java/com/skloda/agentscope/harness/FilesystemSpecFactory.java)
@@ -15,18 +16,27 @@
 - [README.md](file://README.md)
 </cite>
 
+## 更新摘要
+**变更内容**   
+- 新增沙箱产物交付功能（Deliver Artifact）章节
+- 更新Docker沙箱隔离机制部分，增加产物交付能力说明
+- 新增sandbox-artifact-demo演示Agent的配置和使用指南
+- 更新企业级部署指南，包含产物交付的安全配置建议
+
 ## 目录
 1. [项目概述](#项目概述)
 2. [架构设计](#架构设计)
 3. [核心组件分析](#核心组件分析)
 4. [沙箱隔离机制](#沙箱隔离机制)
-5. [内存管理与上下文压缩](#内存管理与上下文压缩)
-6. [文件系统抽象与权限控制](#文件系统抽象与权限控制)
-7. [计划模式与任务管理](#计划模式与任务管理)
-8. [技能学习系统](#技能学习系统)
-9. [企业级部署指南](#企业级部署指南)
-10. [故障排除与监控](#故障排除与监控)
-11. [总结](#总结)
+5. [沙箱产物交付系统](#沙箱产物交付系统)
+6. [内存管理与上下文压缩](#内存管理与上下文压缩)
+7. [文件系统抽象与权限控制](#文件系统抽象与权限控制)
+8. [计划模式与任务管理](#计划模式与任务管理)
+9. [技能学习系统](#技能学习系统)
+10. [工作空间初始化](#工作空间初始化)
+11. [企业级部署指南](#企业级部署指南)
+12. [故障排除与监控](#故障排除与监控)
+13. [总结](#总结)
 
 ## 项目概述
 
@@ -39,6 +49,7 @@ Harness Agent 框架是基于 AgentScope 构建的企业级智能代理运行时
 - **工作空间管理**: 模板化的工作空间初始化和管理
 - **权限控制**: 细粒度的工具调用权限管理
 - **内存优化**: 智能的上下文压缩和内存管理机制
+- **产物交付**: 安全的沙箱到宿主机的文件传输机制
 - **可观测性**: 完整的日志记录和性能监控
 
 **章节来源**
@@ -51,62 +62,67 @@ Harness Agent 框架是基于 AgentScope 构建的企业级智能代理运行时
 
 ```mermaid
 graph TB
-    subgraph "API 层"
-        A[ChatController] --> B[HarnessAgentService]
-    end
-    
-    subgraph "核心层"
-        B --> C[HarnessAgentFactory]
-        C --> D[HarnessAgent]
-        C --> E[PermissionContextFactory]
-        C --> F[ModelFactory]
-    end
-    
-    subgraph "基础设施层"
-        D --> G[HarnessRuntime]
-        G --> H[EventMapper]
-        D --> I[FilesystemSpecFactory]
-        D --> J[CompactionConfigFactory]
-        C --> K[WorkspaceInitializer]
-    end
-    
-    subgraph "执行环境"
-        I --> L[DockerFilesystemSpec]
-        I --> M[LocalFilesystemSpec]
-        G --> N[Stream Events]
-    end
+subgraph "API 层"
+A[ChatController] --> B[HarnessAgentService]
+end
+subgraph "核心层"
+B --> C[HarnessAgentFactory]
+C --> D[HarnessAgent]
+C --> E[PermissionContextFactory]
+C --> F[ModelFactory]
+end
+subgraph "基础设施层"
+D --> G[HarnessRuntime]
+G --> H[EventMapper]
+D --> I[FilesystemSpecFactory]
+D --> J[CompactionConfigFactory]
+D --> K[UploadsArtifactDeliveryTarget]
+C --> L[WorkspaceInitializer]
+end
+subgraph "执行环境"
+I --> M[DockerFilesystemSpec]
+I --> N[LocalFilesystemSpec]
+G --> O[Stream Events]
+K --> P[Host File System]
+end
 ```
 
 **图示来源**
 - [HarnessAgentFactory.java:27-120](file://src/main/java/com/skloda/agentscope/harness/HarnessAgentFactory.java#L27-L120)
 - [HarnessRuntime.java:31-74](file://src/main/java/com/skloda/agentscope/harness/HarnessRuntime.java#L31-L74)
+- [UploadsArtifactDeliveryTarget.java:35-64](file://src/main/java/com/skloda/agentscope/harness/UploadsArtifactDeliveryTarget.java#L35-L64)
 
 ### 数据流架构
 
 ```mermaid
 sequenceDiagram
-    participant Client as 客户端
-    participant Controller as ChatController
-    participant Service as HarnessAgentService
-    participant Factory as HarnessAgentFactory
-    participant Agent as HarnessAgent
-    participant Runtime as HarnessRuntime
-    
-    Client->>Controller: POST /chat/send
-    Controller->>Service: createStreamFlux()
-    Service->>Factory: getOrCreateAgent()
-    Factory->>Factory: 解析配置
-    Factory->>Factory: 创建工作空间
-    Factory->>Factory: 初始化文件系统
-    Factory-->>Service: HarnessAgent实例
-    Service->>Runtime: new HarnessRuntime()
-    Runtime->>Agent: streamEvents()
-    Agent-->>Runtime: Flux<AgentEvent>
-    Runtime-->>Client: SSE事件流
+participant Client as 客户端
+participant Controller as ChatController
+participant Service as HarnessAgentService
+participant Factory as HarnessAgentFactory
+participant Agent as HarnessAgent
+participant Runtime as HarnessRuntime
+participant Delivery as UploadsArtifactDeliveryTarget
+Client->>Controller : POST /chat/send
+Controller->>Service : createStreamFlux()
+Service->>Factory : getOrCreateAgent()
+Factory->>Factory : 解析配置
+Factory->>Factory : 创建工作空间
+Factory->>Factory : 初始化文件系统
+Factory->>Factory : 配置产物交付
+Factory-->>Service : HarnessAgent实例
+Service->>Runtime : new HarnessRuntime()
+Runtime->>Agent : streamEvents()
+Agent->>Delivery : deliver_artifact()
+Delivery->>Delivery : 安全检查 + 文件写入
+Delivery-->>Agent : 返回宿主机路径
+Agent-->>Runtime : Flux<AgentEvent>
+Runtime-->>Client : SSE事件流
 ```
 
 **图示来源**
 - [HarnessAgentService.java:37-95](file://src/main/java/com/skloda/agentscope/harness/HarnessAgentService.java#L37-L95)
+- [UploadsArtifactDeliveryTarget.java:42-64](file://src/main/java/com/skloda/agentscope/harness/UploadsArtifactDeliveryTarget.java#L42-L64)
 
 **章节来源**
 - [HarnessAgentService.java:19-95](file://src/main/java/com/skloda/agentscope/harness/HarnessAgentService.java#L19-L95)
@@ -128,23 +144,21 @@ HarnessRuntime 是核心的流式运行时组件，负责将 Agent 事件转换�
 
 ```mermaid
 classDiagram
-    class HarnessRuntime {
-        +Msg userMsg
-        +RuntimeContext runtimeContext
-        +ObservabilityHook hook
-        +stream(userMsg) Flux<Map<String, Object>>
-        +getHook() ObservabilityHook
-        +close() void
-    }
-    
-    class StreamingAgentRuntime {
-        <<interface>>
-        +stream(userMsg) Flux<Map<String, Object>>
-        +getHook() ObservabilityHook
-        +close() void
-    }
-    
-    HarnessRuntime ..|> StreamingAgentRuntime
+class HarnessRuntime {
++Msg userMsg
++RuntimeContext runtimeContext
++ObservabilityHook hook
++stream(userMsg) Flux<Map<String, Object>>
++getHook() ObservabilityHook
++close() void
+}
+class StreamingAgentRuntime {
+<<interface>>
++stream(userMsg) Flux<Map<String, Object>>
++getHook() ObservabilityHook
++close() void
+}
+HarnessRuntime ..|> StreamingAgentRuntime
 ```
 
 **图示来源**
@@ -164,30 +178,35 @@ HarnessAgentFactory 是 Agent 创建的中央工厂，负责根据配置组装�
 3. **模型创建**: 统一通过 ModelFactory 创建 AI 模型
 4. **文件系统配置**: 根据模式选择本地或 Docker 文件系统
 5. **功能开关**: 按需启用各种高级功能
+6. **产物交付配置**: 集成 Deliver Artifact SPI
 
 #### 创建流程
 
 ```mermaid
 flowchart TD
-    Start([开始创建]) --> ParseConfig[解析配置]
-    ParseConfig --> WorkspaceInit[初始化工作空间]
-    WorkspaceInit --> ModelCreate[创建模型]
-    ModelCreate --> FilesystemSelect{文件系统模式}
-    FilesystemSelect -->|Docker| DockerFS[创建Docker文件系统]
-    FilesystemSelect -->|Local| LocalFS[创建本地文件系统]
-    DockerFS --> FunctionConfig[功能配置]
-    LocalFS --> FunctionConfig
-    FunctionConfig --> Compaction[配置压缩]
-    FunctionConfig --> PlanMode[配置计划模式]
-    FunctionConfig --> Memory[配置分层记忆]
-    Compaction --> BuildAgent[构建Agent]
-    PlanMode --> BuildAgent
-    Memory --> BuildAgent
-    BuildAgent --> End([完成])
+Start([开始创建]) --> ParseConfig[解析配置]
+ParseConfig --> WorkspaceInit[初始化工作空间]
+WorkspaceInit --> ModelCreate[创建模型]
+ModelCreate --> FilesystemSelect{文件系统模式}
+FilesystemSelect --> |Docker| DockerFS[创建Docker文件系统]
+FilesystemSelect --> |Local| LocalFS[创建本地文件系统]
+DockerFS --> ArtifactCheck{检查产物交付}
+LocalFS --> ArtifactCheck
+ArtifactCheck --> |启用| ArtifactConfig[配置UploadsArtifactDeliveryTarget]
+ArtifactCheck --> |禁用| FunctionConfig[功能配置]
+ArtifactConfig --> FunctionConfig
+FunctionConfig --> Compaction[配置压缩]
+FunctionConfig --> PlanMode[配置计划模式]
+FunctionConfig --> Memory[配置分层记忆]
+Compaction --> BuildAgent[构建Agent]
+PlanMode --> BuildAgent
+Memory --> BuildAgent
+BuildAgent --> End([完成])
 ```
 
 **图示来源**
 - [HarnessAgentFactory.java:42-120](file://src/main/java/com/skloda/agentscope/harness/HarnessAgentFactory.java#L42-L120)
+- [HarnessAgentFactory.java:105-114](file://src/main/java/com/skloda/agentscope/harness/HarnessAgentFactory.java#L105-L114)
 
 **章节来源**
 - [HarnessAgentFactory.java:22-120](file://src/main/java/com/skloda/agentscope/harness/HarnessAgentFactory.java#L22-L120)
@@ -207,6 +226,7 @@ Harness 框架提供了完整的安全沙箱环境，确保 Agent 代码的可�
 | 网络访问 | ❌ 受控 | ⚠️ 可配置 |
 | 资源限制 | ❌ | ✅ CPU/内存 |
 | 快照恢复 | ❌ | ✅ |
+| 产物交付 | ❌ | ✅ 通过SPI |
 
 #### Docker 沙箱配置
 
@@ -220,6 +240,85 @@ DockerFilesystemSpec 提供完整的容器化执行环境：
 **章节来源**
 - [FilesystemSpecFactory.java:17-46](file://src/main/java/com/skloda/agentscope/harness/FilesystemSpecFactory.java#L17-L46)
 - [HarnessConfig.java:63-69](file://src/main/java/com/skloda/agentscope/agent/HarnessConfig.java#L63-L69)
+
+## 沙箱产物交付系统
+
+### Deliver Artifact SPI
+
+Agentscope 2.0.3 引入了全新的沙箱产物交付 SPI（Service Provider Interface），允许 Docker 沙箱内的 Agent 安全地将生成的文件传输到宿主机文件系统。
+
+#### 核心组件
+
+**UploadsArtifactDeliveryTarget** - 产物交付目标实现：
+- 实现 `ArtifactDeliveryTarget` 接口
+- 将文件写入 `{java.io.tmpdir}/agentscope-uploads/` 目录
+- 支持与现有上传系统的兼容性
+- 提供冲突检测和覆盖控制
+
+#### 工作流程
+
+```mermaid
+sequenceDiagram
+participant Sandbox as Docker沙箱
+participant Tool as deliver_artifact工具
+participant Target as UploadsArtifactDeliveryTarget
+participant Host as 宿主机文件系统
+Sandbox->>Tool : 调用deliver_artifact(fileName, content, force)
+Tool->>Target : deliver(request)
+Target->>Target : 生成UUID + 验证扩展名
+Target->>Target : 检查文件冲突
+alt 文件存在且force=false
+Target-->>Tool : conflict(错误信息)
+else 文件不存在或force=true
+Target->>Host : 写入文件
+Target-->>Tool : success(绝对路径)
+end
+Tool-->>Sandbox : 返回结果
+```
+
+**图示来源**
+- [UploadsArtifactDeliveryTarget.java:42-64](file://src/main/java/com/skloda/agentscope/harness/UploadsArtifactDeliveryTarget.java#L42-L64)
+
+#### 配置选项
+
+在 `harness-agents.yml` 中启用产物交付：
+
+```yaml
+harnessConfig:
+  artifactDelivery:
+    enabled: true
+```
+
+#### 使用示例
+
+sandbox-artifact-demo Agent 展示了完整的产物交付流程：
+
+```yaml
+- agentId: sandbox-artifact-demo
+  harnessConfig:
+    filesystemMode: DOCKER
+    executionMode: BUILDER
+    artifactDelivery:
+      enabled: true
+  samplePrompts:
+    - prompt: "用 Python 生成一份 100 行的模拟销售数据 CSV，并交付给我"
+      expectedBehavior: "沙箱内生成 CSV 后调用 deliver_artifact 交付到宿主机，返回宿主机绝对路径"
+    - prompt: "把刚才的 CSV 再交付一次，允许覆盖"
+      expectedBehavior: "同名产物重复交付触发 conflict，携带 force=true 后覆盖成功"
+```
+
+#### 安全特性
+
+- **路径隔离**: 文件只能写入预定义的 uploads 目录
+- **冲突检测**: 防止意外覆盖已有文件
+- **强制覆盖**: 需要显式的 `force=true` 参数
+- **类型验证**: 自动提取和验证文件扩展名
+- **大小限制**: 可通过文件系统配置限制文件大小
+
+**章节来源**
+- [UploadsArtifactDeliveryTarget.java:18-102](file://src/main/java/com/skloda/agentscope/harness/UploadsArtifactDeliveryTarget.java#L18-L102)
+- [HarnessConfig.java:137-152](file://src/main/java/com/skloda/agentscope/agent/HarnessConfig.java#L137-L152)
+- [harness-agents.yml:88-123](file://src/main/resources/config/harness-agents.yml#L88-L123)
 
 ## 内存管理与上下文压缩
 
@@ -398,6 +497,22 @@ permissionConfig:
     - edit_docx                  # 文档编辑需要确认
 ```
 
+#### 3. 产物交付安全配置
+
+对于启用产物交付功能的 Agent：
+
+```yaml
+harnessConfig:
+  artifactDelivery:
+    enabled: true
+  # 建议配合以下安全措施
+  permissionConfig:
+    denyTools:
+      - delete                   # 禁止删除已交付的文件
+    askTools:
+      - deliver_artifact         # 产物交付需要确认
+```
+
 ### 资源限制配置
 
 #### Docker 资源配置
@@ -431,6 +546,7 @@ permissionConfig:
    - 任务完成率
    - Token 使用量
    - 工具调用统计
+   - 产物交付成功率
 
 #### 日志收集
 
@@ -502,6 +618,15 @@ public void cleanup() {
 - 确认工具的权限级别
 - 验证用户角色和权限组
 
+#### 4. 产物交付失败
+
+**症状**: deliver_artifact 工具调用失败
+**解决方案**:
+- 检查目标目录权限
+- 验证磁盘空间是否充足
+- 确认文件名和扩展名格式
+- 检查是否有同名文件冲突
+
 ### 监控仪表板
 
 #### 关键监控视图
@@ -510,6 +635,7 @@ public void cleanup() {
 2. **API 性能**: 响应时间、吞吐量、错误率
 3. **业务指标**: Agent 调用次数、任务完成状态
 4. **资源消耗**: Token 使用量、工具调用统计
+5. **产物交付监控**: 交付成功率、文件大小分布
 
 #### 告警规则
 
@@ -520,6 +646,7 @@ public void cleanup() {
 - API 错误率超过 5%
 - 响应时间 P99 超过 5秒
 - 磁盘空间不足 10%
+- 产物交付失败率超过 5%
 
 ### 性能优化建议
 
@@ -563,6 +690,7 @@ Harness Agent 框架提供了一个完整的企业级智能代理运行时平台
 2. **高度可扩展**: 插件化的架构设计，支持自定义扩展
 3. **性能优异**: 优化的内存管理和并发处理机制
 4. **易于运维**: 完善的监控和故障恢复能力
+5. **产物交付**: 安全的沙箱到宿主机的文件传输机制
 
 ### 适用场景
 
@@ -570,6 +698,7 @@ Harness Agent 框架提供了一个完整的企业级智能代理运行时平台
 - **数据分析平台**: 自动化数据处理和报告生成
 - **业务流程自动化**: 端到端的业务流程编排
 - **客户服务机器人**: 智能化的客户支持和咨询
+- **数据生成和处理**: 沙箱内生成文件并安全交付
 
 ### 未来发展方向
 
