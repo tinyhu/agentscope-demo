@@ -33,7 +33,7 @@ agentscope:
       # API key (can be overridden by DASHSCOPE_API_KEY environment variable)
       api-key: ${DASHSCOPE_API_KEY:}
       # Model name
-      model-name: deepseek-v4.1-flash
+      model-name: qwen3.7-flash
       # Enable streaming
       stream: true
       # Enable thinking mode
@@ -62,7 +62,7 @@ agentscope:
   knowledge:
     enabled: true
     path: src/main/resources/knowledge
-    embedding-model: qwen3.7-text-embedding
+    embedding-model: qwen3.7-text-embedding-flash
     dimensions: 1024
     chunk-size: 512
     overlap-size: 50
