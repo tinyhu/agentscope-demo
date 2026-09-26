@@ -66,6 +66,18 @@ import javax.sql.DataSource;
  * first-class support; bean initialization logs the {@code supportsVersioning()} result above).
  * When no distributed profile is active, the default InMemory/JsonFile fallback stores are used
  * and default startup behavior is unchanged.
+ *
+ * <h3>2.0.3 UNVERSIONED saveIfVersion defect (fixed by the wrappers below)</h3>
+ * All three extension stores share one defect in 2.0.3: in
+ * {@code saveIfVersion(userId, sessionId, key, state, UNVERSIONED)} they re-read the freshly
+ * written row via {@code getVersioned(..., State.class)} — but {@code State} is an empty marker
+ * interface without Jackson type information, so the re-read always fails with
+ * {@code InvalidDefinitionException: Cannot construct instance of io.agentscope.core.state.State}.
+ * {@code ReActAgent.persistAgentStateCas} hits this branch on every CAS conflict resolved with
+ * {@code ConflictPolicy.OVERWRITE} (the default), so conflicts crashed the async state saving.
+ * Every store bean below is therefore wrapped in {@link VersioningSafeAgentStateStore}, which
+ * re-implements the UNVERSIONED branch using the concrete runtime state class
+ * (e.g. {@code AgentState}). Remove the wrappers once a fixed agentscope version is adopted.
  */
 @Configuration
 @Profile({"redis", "mysql", "postgresql"})
@@ -89,7 +101,7 @@ public class DistributedStateStoreConfig {
                 .build();
         log.info("S13: RedisAgentStateStore initialized (url={}, keyPrefix={}); state versioning (2.0.3 OCC): supported={}",
                 redisUrl, keyPrefix, store.supportsVersioning());
-        return store;
+        return VersioningSafeAgentStateStore.wrap(store);
     }
 
     /**
@@ -118,7 +130,7 @@ public class DistributedStateStoreConfig {
         AgentStateStore store = new MysqlAgentStateStore(dataSource);
         log.info("S13: MysqlAgentStateStore initialized; state versioning (2.0.3 OCC): supported={}",
                 store.supportsVersioning());
-        return store;
+        return VersioningSafeAgentStateStore.wrap(store);
     }
 
     /**
@@ -146,6 +158,6 @@ public class DistributedStateStoreConfig {
         AgentStateStore store = new PostgresAgentStateStore(dataSource);
         log.info("S13: PostgresAgentStateStore initialized; state versioning (2.0.3 OCC): supported={}",
                 store.supportsVersioning());
-        return store;
+        return VersioningSafeAgentStateStore.wrap(store);
     }
 }
